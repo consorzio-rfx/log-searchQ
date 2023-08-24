@@ -34,3 +34,36 @@ func CreateGuitar(c *gin.Context) {
 		c.JSON(http.StatusOK, guitar)
 	}
 }
+
+//Update Guitar
+func UpdateGuitar(c *gin.Context) {
+	var guitar Models.Guitar
+	id := c.Params.ByName("id")
+
+	err := Models.GetGuitarByID(&guitar, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, guitar)
+	}
+
+	c.BindJSON(&guitar)
+
+	err = Models.UpdateGuitar(&guitar, id)
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, guitar)
+	}
+}
+
+//Delete Guitar
+func DeleteGuitar(c *gin.Context) {
+	var guitar Models.Guitar
+	id := c.Params.ByName("id")
+
+	err := Models.DeleteGuitar(&guitar, id)
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, gin.H{"id" + id: "is deleted"})
+	}
+}
