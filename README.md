@@ -1,4 +1,4 @@
-# Simple RestAPI using GO
+# Simple RestAPI using GO Gin Framework
 
 simple RestAPI with Go, Gin, Gorm, and MySQL
 
