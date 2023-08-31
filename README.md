@@ -25,7 +25,7 @@ $ go mod tidy
 
 ## Configuration
 
-Change the config on Config/Database.go for your dbconfig
+Change the config on Config/Database.go for your local server
 
 ```bash
 Host:     "localhost",
