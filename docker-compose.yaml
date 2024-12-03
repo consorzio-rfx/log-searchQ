@@ -1,0 +1,51 @@
+version: '3'
+
+networks:
+  rewsrv_network_compose:
+    driver: bridge
+
+services:
+  # rewsrv:
+  #   container_name: rewsrv
+  #   build: .
+  #   restart: unless-stopped
+  #   networks:
+  #     rewsrv_network_compose:
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - db
+    
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rewsrv
+      POSTGRES_PASSWORD: rewsrv
+      POSTGRES_DB: rewsrv
+    ports:
+      - "5432:5432"
+    networks:
+      rewsrv_network_compose:
+
+  pgweb:
+    image: sosedoff/pgweb
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://rewsrv:rewsrv@db:5432/rewsrv?sslmode=disable"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    networks:
+      rewsrv_network_compose:
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080
+    depends_on:
+      - db
+    networks:
+      rewsrv_network_compose:
