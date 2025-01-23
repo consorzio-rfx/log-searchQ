@@ -19,13 +19,18 @@ func SetupRouter() *gin.Engine {
 	// 	guitar.DELETE("guitar/:id", Controllers.DeleteGuitar)
 	// }
 
-	// REMEMBER: middleware must precede routes !! //
-	r.Use(middleware.Cors())
+	r.Use(middleware.GinCors())
 
-	r.GET("/guitar-store/guitar", Controllers.GetGuitar)
+	r.GET("/guitar-store/guitar", middleware.KCValidate([]string{"guitar:view", "guitar:list"}), Controllers.GetGuitar)
 	r.POST("/guitar-store/guitar", Controllers.CreateGuitar)
 	r.PUT("/guitar-store/guitar/:id", Controllers.UpdateGuitar)
 	r.DELETE("/guitar-store/guitar/:id", Controllers.DeleteGuitar)
+
+	r.GET("/rss", Controllers.GetAllRSSFeed)
+	r.GET("/rss/:id", Controllers.GetRSSFeed)
+	r.POST("/rss", Controllers.CreateRSSFeed)
+	r.PUT("/rss/:id", Controllers.UpdateRSSFeed)
+	r.DELETE("/rss/:id", Controllers.DeleteRSSFeed)
 
 	return r
 }
