@@ -1,0 +1,44 @@
+.feed-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+}
+
+.feed-item.edit-mode {
+    background-color: #e6e6e6;
+    border-color: #999;
+}
+
+.feed-item.edit-mode form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.feed-item.edit-mode input,
+.feed-item.edit-mode textarea {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.feed-item.edit-mode button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.feed-item.edit-mode button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
