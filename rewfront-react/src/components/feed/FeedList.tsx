@@ -27,6 +27,8 @@ const FeedList = () => {
   const createItem = async (item: RSSFeed) => {
     const res = await fetch('/rss', { method: 'POST', body: JSON.stringify(item) });
     if (res.ok) {
+      const jsonRes = await res.json();
+      item.id = jsonRes.id;
       setEntries([...entries, item]);
     }
   };
