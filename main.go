@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"rewsrv-gin/Config"
-	"rewsrv-gin/Models"
 	"rewsrv-gin/Routes"
 )
 
@@ -17,9 +16,9 @@ func main() {
 		Engine:   "postgres",
 		Path:     "localhost",
 		Port:     "5432",
-		Dbname:   "rewsrv",
-		Username: "rewsrv",
-		Password: "rewsrv",
+		Dbname:   "logbookdb",
+		Username: "helloworld",
+		Password: "helloworld",
 		Config:   "sslmode=disable TimeZone=Europe/Rome",
 	})
 
@@ -30,21 +29,7 @@ func main() {
 	// defer Config.DB.Close()
 
 	// automigrate
-	Config.DB.AutoMigrate(&Models.Guitar{})
-
-	// create one item
-	Config.DB.Create(&Models.Guitar{
-		Brand:       "Fender",
-		Price:       1000,
-		Description: "Very good guitar",
-	})
-
-	// create another item
-	Config.DB.Create(&Models.Guitar{
-		Brand:       "Gibson",
-		Price:       2000,
-		Description: "Very good guitar",
-	})
+	// Config.DB.AutoMigrate(&Models.Run{})
 
 	// routes
 	r := Routes.SetupRouter()
