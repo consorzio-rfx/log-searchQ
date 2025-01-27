@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { RSSFeed } from "../../models/RSSFeed";
 import FeedItem from "./FeedItem";
+import { Button } from '@mui/material';
 
 const FeedList = () => {
   const [entries, setEntries] = useState<RSSFeed[]>([]);
@@ -53,9 +54,9 @@ const FeedList = () => {
         <FeedItem key={entry.id} item={entry} onEdit={(item) => editItem(item)} onDelete={(item) => deleteItem(item)} />
       ))}
     </div>
-    <button onClick={() => createItem({ id: 0, Name: "", Title: "", Url: "", Description: "" })}>
+    <Button variant="contained" onClick={() => createItem({ id: 0, Name: "", Title: "", Url: "", Description: "" })}>
       Add New Item
-    </button>
+    </Button>
 
     </>
   );

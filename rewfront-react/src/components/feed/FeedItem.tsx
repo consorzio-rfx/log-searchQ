@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RSSFeed } from '../../models/RSSFeed';
 import './FeedItem.css';
-
+import { Button } from '@mui/material';
 
 type Props = {
   item: RSSFeed;
@@ -44,8 +44,8 @@ const FeedItem = ({ item, onEdit, onDelete }: Props) => {
           <input type="text" name="Title" value={editedItem.Title} onChange={handleChange} />
           <input type="text" name="Url" value={editedItem.Url} onChange={handleChange} />
           <input type="textarea" name="Description" value={editedItem.Description} onChange={handleChange} />
-          <button type="button" onClick={handleSave}>Save</button>
-          <button type="button" onClick={handleCancel}>Cancel</button>
+          <Button variant="contained" onClick={handleSave}>Save</Button>
+          <Button variant="outlined" onClick={handleCancel}>Cancel</Button>
         </form>
       ) : (
         <div>
@@ -54,8 +54,8 @@ const FeedItem = ({ item, onEdit, onDelete }: Props) => {
           <h2>{item.Name}: {item.Title}</h2>
           <p>Description: {item.Description}</p>
           <p>Link: <a href={item.Url}>{item.Url} </a></p>
-          <button type="button" onClick={handleEdit}>Edit</button>
-          <button type="button" onClick={handleDelete}>Delete</button>
+          <Button variant="contained" onClick={handleEdit}>Edit</Button>
+          <Button variant="contained" onClick={handleDelete}>Delete</Button>
         </div>
         </div>
       )}
