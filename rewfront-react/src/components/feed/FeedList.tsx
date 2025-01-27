@@ -48,7 +48,6 @@ const FeedList = () => {
 
   return (
     <> 
-    <h1> This is the FeedList </h1>
     <div className="feed-list">
       {entries.map((entry) => (
         <FeedItem key={entry.id} item={entry} onEdit={(item) => editItem(item)} onDelete={(item) => deleteItem(item)} />
