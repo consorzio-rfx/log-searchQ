@@ -1,27 +1,21 @@
 import { Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import runsService from "../api/runsService";
+import FullEditDataGrid from "mui-datagrid-full-edit";
 
 const Runs = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [rows, setRows] = useState([]);
 
-  const [runs, setRuns] = useState([]);
-
-  // This effect will run only once after the initial render
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/logbook/runs")
-      .then((response) => {
-        // console.log("response.data", response.data);
-        setRuns(response.data);
-        // console.log(runs)
-      });
-  }, []); // <--  [] means: Run the effect only once, after initial render
+    runsService.getAllRuns().then((res) => {
+      setRows(res.data);
+    })
+  }, []);
 
   const columns = [
     {
@@ -112,12 +106,10 @@ const Runs = () => {
         }}
 
       >
-        <DataGrid
-          rows={runs}
+        <FullEditDataGrid
+          rows={rows}
           getRowId={(row) => row.Run}
           columns={columns}
-          slots={{ toolbar: GridToolbar }} 
-          slotProps={{ toolbar: { showQuickFilter: true } }}
         />
       </Box>
     </Box>
