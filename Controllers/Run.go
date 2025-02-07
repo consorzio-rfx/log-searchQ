@@ -3,6 +3,7 @@ package Controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"rewsrv-gin/Models"
 
@@ -29,6 +30,38 @@ func CreateRun(c *gin.Context) {
 	err := Models.CreateRun(&run)
 	if err != nil {
 		fmt.Println(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, run)
+	}
+}
+
+// Update a run
+func UpdateRun(c *gin.Context) {
+	var run Models.Run
+
+	idStr := c.Params.ByName("id")
+	c.BindJSON(&run)
+	id, _ := strconv.ParseUint(idStr, 10, 64)
+	run.Run = uint(id)
+
+	err := Models.UpdateRun(&run)
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, run)
+	}
+}
+
+// Delete a run
+func DeleteRun(c *gin.Context) {
+	var run Models.Run
+	idStr := c.Params.ByName("id")
+	id, _ := strconv.ParseUint(idStr, 10, 64)
+	run.Run = uint(id)
+
+	err := Models.DeleteRun(&run)
+	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
 		c.JSON(http.StatusOK, run)
