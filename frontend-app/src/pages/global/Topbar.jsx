@@ -9,17 +9,16 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import LoginIcon from "@mui/icons-material/Login";
-import OAuthSignInPage from "../auth/signin.tsx";
+import LogoutIcon from '@mui/icons-material/Logout';
+import OAuthSignInPage from "../auth/SignIn.tsx";
+import { useKeycloakAuthContext } from "../auth/KeycloakAuthContext.js";
 
 const Topbar = () => {
+  const { authenticated, keycloak } = useKeycloakAuthContext();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [openLogin, setOpenLogin] = useState(false);
-
-  const onClose = () => {
-    setOpenLogin(false);
-  };
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
@@ -50,14 +49,25 @@ const Topbar = () => {
         <IconButton>
           <SettingsOutlinedIcon />
         </IconButton>
+
+        {!authenticated &&
         <IconButton>
-          <LoginIcon onClick={() => setOpenLogin(true)}/>
-        </IconButton>
+          < LoginIcon onClick={() => setOpenLogin(true)}/>
+        </IconButton>}
+
         <IconButton>
           <PersonOutlinedIcon />
         </IconButton>
 
-        <OAuthSignInPage open={openLogin} onClose={onClose}/>
+        {authenticated &&
+        <IconButton>
+          < LogoutIcon onClick={() => {
+              setOpenLogin(false);
+              keycloak.logout();
+            }}/>
+        </IconButton>} 
+
+        <OAuthSignInPage open={openLogin} onClose={() => setOpenLogin(false)}/>
       </Box>
     </Box>
   );
