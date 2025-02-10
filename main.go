@@ -30,6 +30,7 @@ func main() {
 
 	// automigrate
 	// Config.DB.AutoMigrate(&Models.Run{})
+	// Config.DB.AutoMigrate(&Models.Shot{})
 
 	// routes
 	r := Routes.SetupRouter()

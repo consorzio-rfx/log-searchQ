@@ -7,6 +7,7 @@ import { ColorModeContext, useMode } from "./theme";
 import Home from "./pages/home";
 import Runs from "./pages/logbook/runs";
 import { KeycloakAuthProvider } from "./pages/auth/KeycloakAuthContext";
+import Shots from "./pages/logbook/shots";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -24,6 +25,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />}/>
                 <Route path="/runs" element={<Runs />} />
+                <Route path="/shots" element={<Shots />} />
               </Routes>
             </main>
           </div>
