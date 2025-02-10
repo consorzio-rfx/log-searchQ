@@ -14,7 +14,7 @@ const providers = [
   { id: 'keycloak', name: 'Keycloak' },
 ];
 
-const CustomSignInPage = () => {
+export default function OAuthSignInPage({open, onClose}) {
   const { authenticated, keycloak } = useKeycloakAuthContext();
 
   const signIn: (provider: AuthProvider) => void | Promise<AuthResponse> = async (
@@ -34,15 +34,9 @@ const CustomSignInPage = () => {
   };
 
   return (
-    <SignInPage signIn={signIn} providers={providers} />
-  )
-}
-
-export default function OAuthSignInPage({open, onClose}) {
-  return (
     <Dialog open={open} onClose={onClose}>
       <AppProvider>
-        <CustomSignInPage />
+        <SignInPage signIn={signIn} providers={providers} />
       </AppProvider>
     </Dialog>
   );
