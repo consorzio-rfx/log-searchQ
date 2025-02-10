@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import runsService from "../api/runsService";
 import FullEditDataGrid from "mui-datagrid-full-edit";
+import MultilineEditCell from "../../components/MultilineEditCell";
 
 const Runs = () => {
   const theme = useTheme();
@@ -63,6 +64,7 @@ const Runs = () => {
       headerName: "Username",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Entered",
@@ -81,54 +83,63 @@ const Runs = () => {
       headerName: "PreBrief",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "PostBrief",
       headerName: "PostBrief",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "PreKeywords",
       headerName: "PreKeywords",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "PostKeywords",
       headerName: "PostKeywords",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Leader",
       headerName: "Leader",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Summary",
       headerName: "Summary",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Rt",
       headerName: "Rt",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Sc",
       headerName: "Sc",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
     {
       field: "Sl",
       headerName: "Sl",
       flex: 1,
       editable: true,
+      renderEditCell: (params) => <MultilineEditCell {...params} />,
     },
   ];
 
