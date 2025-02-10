@@ -1,5 +1,5 @@
 import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ColorModeContext, tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -8,11 +8,18 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import LoginIcon from "@mui/icons-material/Login";
+import OAuthSignInPage from "../auth/signin.tsx";
 
 const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+  const [openLogin, setOpenLogin] = useState(false);
+
+  const onClose = () => {
+    setOpenLogin(false);
+  };
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
@@ -44,8 +51,13 @@ const Topbar = () => {
           <SettingsOutlinedIcon />
         </IconButton>
         <IconButton>
+          <LoginIcon onClick={() => setOpenLogin(true)}/>
+        </IconButton>
+        <IconButton>
           <PersonOutlinedIcon />
         </IconButton>
+
+        <OAuthSignInPage open={openLogin} onClose={onClose}/>
       </Box>
     </Box>
   );
