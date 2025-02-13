@@ -4,6 +4,8 @@ import (
 	"rewsrv-gin/Config"
 
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Run struct {
@@ -25,6 +27,23 @@ func (b *Run) TableName() string {
 	return "runs"
 }
 
+// Get total count of runs
+func GetTotalRuns(totalRuns *int64) (err error) {
+	if err = Config.DB.Model(&Run{}).Count(totalRuns).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// Get runs with pagination
+func GetRuns(runs *[]Run, page int, pageSize int) (err error) {
+	offset := (page - 1) * pageSize
+	if err = Config.DB.Order("run").Limit(pageSize).Offset(offset).Find(runs).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // Get all runs
 func GetAllRuns(runs *[]Run) (err error) {
 	if err = Config.DB.Find(runs).Error; err != nil {
@@ -33,13 +52,13 @@ func GetAllRuns(runs *[]Run) (err error) {
 	return nil
 }
 
-// // BeforeCreate hook to assign the maxID for the new run
-// func (run *Run) BeforeCreate(tx *gorm.DB) (err error) {
-// 	var maxID uint
-// 	tx.Raw("SELECT COALESCE(MAX(run), 0) + 1 FROM runs").Scan(&maxID)
-// 	run.Run = maxID
-// 	return
-// }
+// BeforeCreate hook to assign the maxID for the new run
+func (run *Run) BeforeCreate(tx *gorm.DB) (err error) {
+	var maxID uint
+	tx.Raw("SELECT COALESCE(MAX(run), 0) + 1 FROM runs").Scan(&maxID)
+	run.Run = maxID
+	return
+}
 
 // Create a new run
 func CreateRun(run *Run) (err error) {

@@ -10,6 +10,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Get runs with pagination
+func GetRuns(c *gin.Context) {
+	// Get page and pageSize from query parameters
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "100"))
+
+	var totalRuns int64
+	var runs []Models.Run
+
+	err1 := Models.GetTotalRuns(&totalRuns)
+	err2 := Models.GetRuns(&runs, page, pageSize)
+
+	if err1 != nil || err2 != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		// Respond with paginated runs
+		c.JSON(http.StatusOK, gin.H{
+			"runs":      runs,
+			"totalRuns": totalRuns,
+		})
+	}
+}
+
 // Get all runs
 func GetAllRuns(c *gin.Context) {
 	var runs []Models.Run
