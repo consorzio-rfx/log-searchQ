@@ -31,7 +31,7 @@ const CustomSidebar = () => {
   return (
     <Box
       sx={{
-        "& .ps-sidebar-root": {
+        "& .ps-sidebar-container": {
           background: `${colors.primary[400]} !important`,
         },
         "& .ps-menu-button:hover": {
