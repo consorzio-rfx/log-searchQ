@@ -13,6 +13,7 @@
     "@types/react-dom": "^19.0.3",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
+    "keycloak-js": "^26.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-pro-sidebar": "^0.7.1",
