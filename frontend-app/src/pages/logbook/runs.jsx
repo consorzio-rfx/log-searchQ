@@ -1,15 +1,16 @@
-import { Box, Button, TablePaginationProps, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import runsService from "../../api/runsService";
-import { DataGrid, gridPageCountSelector, GridPagination, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter, useGridApiContext, useGridSelector } from "@mui/x-data-grid";
-import MuiPagination from '@mui/material/Pagination';
+import { DataGrid } from "@mui/x-data-grid";
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
 import React from "react";
+import CustomPagination from "../../components/CustomPagination";
+import CustomToolbar from "../../components/CustomToolbar";
 
 
 const Runs = () => {
@@ -119,51 +120,172 @@ const Runs = () => {
       });
   }
 
-  // const createRowData = (rows) => {
-  //   const newId = Math.max(...rows.map((r) => (r.id ? r.id : 0) * 1)) + 1;
-  //   const newRun = Math.max(...rows.map((r) => (r.Run ? r.Run : 0) * 1)) + 1;
-  //   return { id: newId, Run: newRun };
-  // };
+  function CRUDBoxRun() {
+    const ref = useRef(null);
 
-  function Pagination({ page, onPageChange, className }) {
-    const apiRef = useGridApiContext();
-    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-  
-    return (
-      <MuiPagination
-        className={className}
-        count={pageCount}
-        page={page + 1}
-        onChange={(event, newPage) => {
-          onPageChange(event, newPage - 1);
-        }}
-      />
-    );
-  }
-  
-  function CustomPagination(props) {
-    return <GridPagination ActionsComponent={Pagination} {...props} />;
-  }
+    useEffect(() => {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, []);
 
-  function CustomToolbar() {
     return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector/>
-        <GridToolbarQuickFilter/>
-        <Box sx={{ flexGrow: 1 }} />
-        <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={onAddRun}>
-          ADD ROW
-        </Button>
-        <GridToolbarExport
-          slotProps={{
-            tooltip: { title: 'Export data' },
-            button: { variant: 'outlined' },
-          }}
+    <Box ref={ref}>
+      <Box 
+        component="form"
+        sx={{ '& .MuiTextField-root': { m: "10px 10px 10px 0", width: "25ch" } }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          id="ID"
+          label="ID"
+          name="id"
+          multiline
+          slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
+          defaultValue={selectedRun.id}
+        /> 
+        <TextField
+          id="Username"
+          label="Username"
+          name="Username"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Username}
+          onChange={onTextFieldChange}
         />
-      </GridToolbarContainer>
-    );
+        <TextField
+          id="Entered"
+          label="Entered"
+          name="Entered"
+          slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
+          multiline
+          defaultValue={selectedRun.Entered}
+        />
+        <TextField
+          id="Run"
+          label="Run"
+          name="Run"
+          slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
+          multiline
+          defaultValue={selectedRun.Run}
+        />
+        <TextField
+          id="PreBrief"
+          label="PreBrief"
+          name="PreBrief"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.PreBrief}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="PostBrief"
+          label="PostBrief"
+          name="PostBrief"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.PostBrief}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="PreKeywords"
+          label="PreKeywords"
+          name="PreKeywords"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.PreKeywords}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="PostKeywords"
+          label="PostKeywords"
+          name="PostKeywords"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.PostKeywords}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="Leader"
+          label="Leader"
+          name="Leader"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Leader}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="Summary"
+          label="Summary"
+          name="Summary"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Summary}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="Rt"
+          label="Rt"
+          name="Rt"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Rt}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="Sc"
+          label="Sc"
+          name="Sc"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Sc}
+          onChange={onTextFieldChange}
+        />
+        <TextField
+          id="Sl"
+          label="Sl"
+          name="Sl"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={selectedRun.Sl}
+          onChange={onTextFieldChange}
+        />
+      </Box>
+
+      {selectedRun.Run != null ?
+      // SELECT RUN
+      <Box display="flex" justifyContent="space-between" p={2}>
+        <Button 
+          sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
+          size="small" variant="standard" startIcon={<DoneIcon />} onClick={onUpdateRun}
+        >
+          UPDATE RUN
+        </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
+          size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteRun}
+        >
+          DELETE RUN
+        </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<AddIcon />}
+        >
+          SHOW SHOT 
+        </Button>
+      </Box>
+      : 
+      // ADD RUN
+      <Box display="flex" justifyContent="center" p={2}>
+        <Button 
+          sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
+          size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitRun}
+        >
+          SUBMIT RUN
+        </Button>
+      </Box>}
+    </Box>)
   }
 
   const columns = [
@@ -263,15 +385,15 @@ const Runs = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          // onSaveRow={onSaveRow}
-          // onDeleteRow={onDeleteRow}
-          // createRowData={createRowData}
           onRowClick={handleRowClick}
 
           pagination
           slots={{
             toolbar: CustomToolbar,
             pagination: CustomPagination,
+          }}
+          slotProps={{
+            toolbar: {onAddRow: onAddRun}
           }}
 
           paginationMode="server"
@@ -282,165 +404,7 @@ const Runs = () => {
         />
       </Box>
 
-      {selectedRun !== null &&
-      <Box> 
-        <Box 
-          component="form"
-          sx={{ '& .MuiTextField-root': { m: "10px 10px 10px 0", width: "25ch" } }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            id="ID"
-            label="ID"
-            name="id"
-            multiline
-            slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
-            defaultValue={selectedRun.id}
-          /> 
-          <TextField
-            id="Username"
-            label="Username"
-            name="Username"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Username}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Entered"
-            label="Entered"
-            name="Entered"
-            slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
-            multiline
-            defaultValue={selectedRun.Entered}
-          />
-          <TextField
-            id="Run"
-            label="Run"
-            name="Run"
-            slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
-            multiline
-            defaultValue={selectedRun.Run}
-          />
-          <TextField
-            id="PreBrief"
-            label="PreBrief"
-            name="PreBrief"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.PreBrief}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="PostBrief"
-            label="PostBrief"
-            name="PostBrief"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.PostBrief}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="PreKeywords"
-            label="PreKeywords"
-            name="PreKeywords"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.PreKeywords}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="PostKeywords"
-            label="PostKeywords"
-            name="PostKeywords"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.PostKeywords}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Leader"
-            label="Leader"
-            name="Leader"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Leader}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Summary"
-            label="Summary"
-            name="Summary"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Summary}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Rt"
-            label="Rt"
-            name="Rt"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Rt}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Sc"
-            label="Sc"
-            name="Sc"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Sc}
-            onChange={onTextFieldChange}
-          />
-          <TextField
-            id="Sl"
-            label="Sl"
-            name="Sl"
-            multiline
-            slotProps={{ inputLabel: {shrink: true} }}
-            defaultValue={selectedRun.Sl}
-            onChange={onTextFieldChange}
-          />
-        </Box>
-
-        {selectedRun.Run != null ?
-        // SELECT RUN
-        <Box display="flex" justifyContent="space-between" p={2}>
-          <Button 
-            sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-            size="small" variant="standard" startIcon={<DoneIcon />} onClick={onUpdateRun}
-          >
-            UPDATE RUN
-          </Button>
-
-          <Button 
-            sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
-            size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteRun}
-          >
-            DELETE RUN
-          </Button>
-
-          <Button 
-            sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
-            size="small" variant="standard" startIcon={<AddIcon />}
-          >
-            ADD SHOT 
-          </Button>
-        </Box>
-        : 
-        // ADD RUN
-        <Box display="flex" justifyContent="center" p={2}>
-          <Button 
-            sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-            size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitRun}
-          >
-            SUBMIT RUN
-          </Button>
-        </Box>}
-      </Box>}
+      {selectedRun !== null && <CRUDBoxRun />}
 
     </Box>
   );
