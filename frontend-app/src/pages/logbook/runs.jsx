@@ -11,6 +11,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import React from "react";
 import CustomPagination from "../../components/CustomPagination";
 import CustomToolbar from "../../components/CustomToolbar";
+import Shots from "./shots";
 
 
 const Runs = () => {
@@ -20,7 +21,6 @@ const Runs = () => {
   const [rows, setRows] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
-
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 100,
@@ -28,8 +28,12 @@ const Runs = () => {
 
   const [selectedRun, setSelectedRun] = useState(null);
   const selectedRunRef = useRef(null);
+
+  const [showShot, setShowShot] = useState(false); 
   
   const handleRowClick = (params) => {
+    setShowShot(false);
+
     selectedRunRef.current = params.row;
     setSelectedRun(params.row);
   };
@@ -102,6 +106,7 @@ const Runs = () => {
       Sl: null,
     };
 
+    setShowShot(false);
     selectedRunRef.current = emptyRun;
     setSelectedRun(emptyRun);
   }
@@ -118,6 +123,10 @@ const Runs = () => {
       .catch((err) => {
         // 
       });
+  }
+
+  const onShowShot = () => {
+    setShowShot(true);
   }
 
   function CRUDBoxRun() {
@@ -270,7 +279,7 @@ const Runs = () => {
 
         <Button 
           sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
-          size="small" variant="standard" startIcon={<AddIcon />}
+          size="small" variant="standard" startIcon={<AddIcon />} onClick={onShowShot}
         >
           SHOW SHOT 
         </Button>
@@ -285,6 +294,8 @@ const Runs = () => {
           SUBMIT RUN
         </Button>
       </Box>}
+
+      {showShot && <Shots Run={selectedRun.Run}/>}
     </Box>)
   }
 

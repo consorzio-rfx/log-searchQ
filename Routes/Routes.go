@@ -19,7 +19,7 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/logbook/runs/:id", Controllers.UpdateRun)
 	r.DELETE("/logbook/runs/:id", Controllers.DeleteRun)
 
-	r.GET("/logbook/shots", Controllers.GetAllShots)
+	r.GET("/logbook/shots", Controllers.GetShots)
 	r.POST("/logbook/shots", Controllers.CreateShot)
 	r.PUT("/logbook/shots/:id", Controllers.UpdateShot)
 	r.DELETE("/logbook/shots/:id", Controllers.DeleteShot)

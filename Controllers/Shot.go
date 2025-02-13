@@ -10,6 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Get shots with pagination
+func GetShots(c *gin.Context) {
+	// Get page and pageSize from query parameters
+	runId, _ := strconv.Atoi(c.DefaultQuery("Run", "-1"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "100"))
+
+	var totalShots int64
+	var shots []Models.Shot
+
+	err1 := Models.GetTotalShots(&totalShots, runId)
+	err2 := Models.GetShots(&shots, runId, page, pageSize)
+
+	if err1 != nil || err2 != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		// Respond with paginated shots
+		c.JSON(http.StatusOK, gin.H{
+			"shots":      shots,
+			"totalShots": totalShots,
+		})
+	}
+}
+
 // Get all shots
 func GetAllShots(c *gin.Context) {
 	var shots []Models.Shot
