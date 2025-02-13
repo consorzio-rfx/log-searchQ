@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Topbar from "./pages/global/Topbar";
-import Sidebar from "./pages/global/Sidebar";
+import CustomSidebar from "./pages/global/CustomSidebar";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Home from "./pages/home";
@@ -19,7 +19,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="app">
-            <Sidebar isSidebar={isSidebar} />
+            <CustomSidebar isSidebar={isSidebar} />
             <main className="content">
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
