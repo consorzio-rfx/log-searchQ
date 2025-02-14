@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, Divider, TextField } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
@@ -294,6 +294,8 @@ const Runs = () => {
           SUBMIT RUN
         </Button>
       </Box>}
+
+      <Divider sx={{ my: 2 }} />
 
       {showShot && <Shots Run={selectedRun.Run}/>}
     </Box>)

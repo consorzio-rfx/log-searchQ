@@ -336,11 +336,11 @@ const Shots = ({ Run }) => {
             "--DataGrid-containerBackground": "none",
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700], 
+            backgroundColor: colors.greenAccent[700], 
           },     
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: colors.greenAccent[700],
           },
           "& .MuiButton-text": {
             color: `${colors.grey[100]} !important`,
