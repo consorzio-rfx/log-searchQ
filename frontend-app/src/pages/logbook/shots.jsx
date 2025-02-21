@@ -10,6 +10,7 @@ import CustomToolbar from "../../components/CustomToolbar";
 import CustomPagination from "../../components/CustomPagination";
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const Shots = ({ Run }) => {
   const theme = useTheme();
@@ -115,6 +116,11 @@ const Shots = ({ Run }) => {
       .catch((err) => {
         // 
       });
+  }
+
+  const onCancelShot = () => {
+    selectedShotRef.current = null;
+    setSelectedShot(null);  
   }
 
   function CRUDBoxShot() {
@@ -236,15 +242,29 @@ const Shots = ({ Run }) => {
         >
           DELETE SHOT 
         </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelShot}
+        >
+          CANCEL   
+        </Button>
       </Box>
       :
       // ADD SHOT
-      <Box display="flex" justifyContent="center" p={2}>
+      <Box display="flex" justifyContent="space-between" p={2}>
       <Button 
         sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
         size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitShot}
       >
         SUBMIT SHOT
+      </Button>
+
+      <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelShot}
+        >
+          CANCEL   
       </Button>
     </Box>}
     </Box>)

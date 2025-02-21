@@ -8,6 +8,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
 import React from "react";
 import CustomPagination from "../../components/CustomPagination";
 import CustomToolbar from "../../components/CustomToolbar";
@@ -127,6 +128,12 @@ const Runs = () => {
 
   const onShowShot = () => {
     setShowShot(true);
+  }
+
+  const onCancelRun = () => {
+    setShowShot(false);
+    selectedRunRef.current = null;
+    setSelectedRun(null);
   }
 
   function CRUDBoxRun() {
@@ -278,10 +285,17 @@ const Runs = () => {
         </Button>
 
         <Button 
-          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          sx={{ backgroundColor: colors.greenAccent[600], color: 'white', '&:hover': { backgroundColor: colors.greenAccent[400] } }} 
           size="small" variant="standard" startIcon={<AddIcon />} onClick={onShowShot}
         >
           SHOW SHOT 
+        </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelRun}
+        >
+          CANCEL 
         </Button>
       </Box>
       : 
