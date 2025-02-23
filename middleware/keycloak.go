@@ -13,7 +13,7 @@ var (
 	keycloakURL  = "http://localhost:8080"
 	realm        = "myrealm"
 	clientID     = "backend-client"
-	clientSecret = "secret"
+	clientSecret = "ruKA36WzJvzzYT7QnAmRO9smvZbAtX6h"
 	client       = gocloak.NewClient(keycloakURL)
 )
 
@@ -47,6 +47,17 @@ func KeycloakAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		// // Token introspection checks if the token is active
+		// result, err := client.RetrospectToken(
+		// 	ctx, tokenStr, clientID, clientSecret, realm,
+		// )
+
+		// if err != nil || !*result.Active {
+		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "inactive token"})
+		// 	c.Abort()
+		// 	return
+		// }
 
 		c.Next()
 	}

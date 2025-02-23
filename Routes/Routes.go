@@ -14,6 +14,9 @@ func SetupRouter() *gin.Engine {
 	// REMEMBER: middleware must precede routes !! //
 	r.Use(middleware.Cors())
 
+	// Authentication
+	r.Use(middleware.KeycloakAuthMiddleware())
+
 	r.GET("/logbook/runs", Controllers.GetRuns)
 	r.POST("/logbook/runs", Controllers.CreateRun)
 	r.PUT("/logbook/runs/:id", Controllers.UpdateRun)

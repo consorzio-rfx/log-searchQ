@@ -13,11 +13,14 @@ import React from "react";
 import CustomPagination from "../../components/CustomPagination";
 import CustomToolbar from "../../components/CustomToolbar";
 import Shots from "./shots";
+import { useKeycloakAuthContext } from "../auth/KeycloakAuthContext";
 
 
 const Runs = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const { authenticated, keycloak } = useKeycloakAuthContext();
 
   const [rows, setRows] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
@@ -46,7 +49,7 @@ const Runs = () => {
 
   const fetchData = (paginationModel) => {
     setLoading(true);
-    runsService.getRuns(paginationModel.page + 1, paginationModel.pageSize).then((res) => {
+    runsService.getRuns(paginationModel.page + 1, paginationModel.pageSize, keycloak).then(res => {
       const runsWithIds = res.data.runs.map((row, index) => ({
         id : index + 1 + (paginationModel.page * paginationModel.pageSize),
         ...row,
@@ -54,12 +57,16 @@ const Runs = () => {
       
       setRows(runsWithIds);
       setTotalRows(res.data.totalRuns);
+    }, error => {
+      if (error.response && error.response.status === 401) {
+        console.warn("Unauthorized!");
+      }
     }).finally(() => {setLoading(false)});
   }
 
   useEffect(() => {
     fetchData(paginationModel);
-  }, [paginationModel]);
+  }, [authenticated, paginationModel]);
 
   const onUpdateRun = () => {
     const newRun = selectedRunRef.current;
