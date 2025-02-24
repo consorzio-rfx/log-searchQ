@@ -8,11 +8,17 @@ export const useKeycloakAuthContext = () => useContext(KeycloakAuthContext);
 
 export const KeycloakAuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
       keycloak.initPromise
           .then(authenticated => {
               setAuthenticated(authenticated);
+              if (authenticated) {
+                keycloak.loadUserInfo().then((user) => {
+                  setUserInfo(user);
+                });
+              }
           })
           .catch(error => {
               console.error("Keycloak initialization failed", error);
@@ -20,7 +26,7 @@ export const KeycloakAuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <KeycloakAuthContext.Provider value={{ authenticated, keycloak }}>
+    <KeycloakAuthContext.Provider value={{ authenticated, userInfo, keycloak }}>
       {children}
     </KeycloakAuthContext.Provider>
   );

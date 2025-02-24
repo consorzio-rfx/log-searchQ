@@ -1,4 +1,4 @@
-import { Box, IconButton, useTheme } from "@mui/material";
+import { Box, IconButton, Popover, Typography, useTheme } from "@mui/material";
 import { useContext, useState } from "react";
 import { ColorModeContext, tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
@@ -14,12 +14,23 @@ import OAuthSignInPage from "../auth/SignIn.tsx";
 import { useKeycloakAuthContext } from "../auth/KeycloakAuthContext.js";
 
 const Topbar = () => {
-  const { authenticated, keycloak } = useKeycloakAuthContext();
+  const { authenticated, userInfo, keycloak } = useKeycloakAuthContext();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [openLogin, setOpenLogin] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handlePersonIconClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePersonIconClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+  
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
       {/* SEARCH BAR */}
@@ -56,8 +67,27 @@ const Topbar = () => {
         </IconButton>}
 
         <IconButton>
-          <PersonOutlinedIcon />
+          <PersonOutlinedIcon aria-describedby={id} onClick={handlePersonIconClick}/>
         </IconButton>
+        
+        {authenticated && <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handlePersonIconClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+
+          <Box sx={{ p: 2, bgcolor: colors.blueAccent[900]}}>
+            <Typography>Name: {userInfo?.name}</Typography>
+            <Typography>Email: {userInfo?.email}</Typography>
+            <Typography>Username: {userInfo?.preferred_username}</Typography>
+          </Box> 
+
+        </Popover>}
 
         {authenticated &&
         <IconButton>

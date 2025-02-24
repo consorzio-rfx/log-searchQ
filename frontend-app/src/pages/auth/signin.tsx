@@ -15,7 +15,7 @@ const providers = [
 ];
 
 export default function OAuthSignInPage({open, onClose}) {
-  const { authenticated, keycloak } = useKeycloakAuthContext();
+  const { authenticated, userInfo, keycloak } = useKeycloakAuthContext();
 
   const signIn: (provider: AuthProvider) => void | Promise<AuthResponse> = async (
     provider) => {

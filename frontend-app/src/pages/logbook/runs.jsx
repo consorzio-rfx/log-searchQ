@@ -20,7 +20,7 @@ const Runs = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { authenticated, keycloak } = useKeycloakAuthContext();
+  const { authenticated, userInfo, keycloak } = useKeycloakAuthContext();
 
   const [rows, setRows] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
