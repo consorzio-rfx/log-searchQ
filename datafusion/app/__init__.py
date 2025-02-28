@@ -1,6 +1,7 @@
 from flask import Flask
 from .database.db import init_db
 from .routers.user_routes import user_blueprint
+from .routers.executor_routes import executor_blueprint
 from .middleware.cors_middleware import CORSMiddleware
 from app.config import Config
 
@@ -21,5 +22,6 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(user_blueprint)
+    app.register_blueprint(executor_blueprint)
 
     return app
