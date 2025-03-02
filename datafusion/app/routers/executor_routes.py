@@ -1,9 +1,15 @@
 from flask import Blueprint, request, jsonify
 from ..utils.executor import *
+from ..services.execution_service import ExecutionService
 
 executor_blueprint = Blueprint('executor', __name__)
 
-@executor_blueprint.route('/executor', methods=['POST'])
+@executor_blueprint.route('/executors', methods=['GET'])
+def getAllExecution():
+    executors = ExecutionService.getAllExecution()
+    return jsonify([executor.to_dict() for executor in executors])
+
+@executor_blueprint.route('/executors', methods=['POST'])
 def execute():
     try:
         # Get JSON data from the request

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from .logbook_adapter import LogbookAdapter
 from .mdsplus_adapter import MDSplusAdapter
+from .execution_cache import ExecutionCache
 import numpy as np
 
 ExecutorRegistry = {}
@@ -11,8 +12,9 @@ class Executor:
         self.executorInput = executorInput
 
     def execute(self):
-        # Log execute
-        print("EXECUTE", self.executorName, self.executorInput)
+        # Check cache with initial form
+        if ExecutionCache.hasCached(self.executorName, self.executorInput):
+            return ExecutionCache.getCachedOutput(self.executorName, self.executorInput)
 
         # Recursively compute child 
         # Could be MapReduce
@@ -25,11 +27,21 @@ class Executor:
             else:
                 args.append(arg)
 
-        # Log compute
-        print("COMPUTE", self.executorName, *args)
-
+        # Check cache with args form
+        if (ExecutionCache.hasCached(self.executorName, args)):
+            # Cache
+            ExecutionCache.cache(self.executorName, self.executorInput, executorOutput)
+            return ExecutionCache.getCachedOutput(executorName, args)
+        
         # Actually compute
-        return self.compute(*args)
+        executorOutput =  self.compute(*args)
+
+        # Cache
+        ExecutionCache.cache(self.executorName, self.executorInput, executorOutput) 
+        ExecutionCache.cache(self.executorName, args, executorOutput)
+
+        return executorOutput
+
     
     @abstractmethod
     def compute(self, *args):
@@ -42,7 +54,7 @@ class ComputeMaxCurrentOfShotExecutor(Executor):
 
         nodeData = MDSplusAdapter.getNodeData('RFX', shot, path)
 
-        return {"result": np.max(nodeData)}
+        return {"result": np.max(nodeData).item()}
 
 
 class ComputeMaxCurrentOfShotsExecutor(Executor):
