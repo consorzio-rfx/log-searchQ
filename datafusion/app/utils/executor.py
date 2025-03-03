@@ -10,6 +10,9 @@ class Executor:
     def __init__(self, executorName, executorInput):
         self.executorName = executorName
         self.executorInput = executorInput
+    
+    def to_json(self):
+        return {"executorName": self.executorName, "executorInput": self.executorInput}
 
     def execute(self):
         # Check cache with initial form
@@ -29,9 +32,10 @@ class Executor:
 
         # Check cache with args form
         if (ExecutionCache.hasCached(self.executorName, args)):
+            executorOutput = ExecutionCache.getCachedOutput(self.executorName, args)
             # Cache
             ExecutionCache.cache(self.executorName, self.executorInput, executorOutput)
-            return ExecutionCache.getCachedOutput(executorName, args)
+            return executorOutput
         
         # Actually compute
         executorOutput =  self.compute(*args)
@@ -42,7 +46,7 @@ class Executor:
 
         return executorOutput
 
-    
+    # Computation Logic is implemented in this function
     @abstractmethod
     def compute(self, *args):
         pass
@@ -57,19 +61,26 @@ class ComputeMaxCurrentOfShotExecutor(Executor):
         return {"result": np.max(nodeData).item()}
 
 
-class ComputeMaxCurrentOfShotsExecutor(Executor):
+class ComputeMaxCurrentOfShotsExecutor2(Executor):
     def compute(self, *args):
+        results = [arg["result"] for arg in args]
+        return {"result": max(results)}
+
+class ComputeMaxCurrentOfShotsExecutor(Executor):
+    # Special case
+    def transfrom(self, *args):
         shots = args[0]["shots"]
         path = args[1]["path"]
 
-        # Could be MapReduce
-        results = []
+        transformedInput = []
         for shot in shots:
-            perShotInput = [{"shot": shot}, {"path": path}]
-            perShotExecutor = ComputeMaxCurrentOfShotExecutor("ComputeMaxCurrentOfShotExecutor", perShotInput)
-            results.append(perShotExecutor.execute()["result"]) 
+            perShotInput = {"executorName": "ComputeMaxCurrentOfShotExecutor", "executorInput": [{"shot": shot}, {"path": path}]}
+            transformedInput.append(perShotInput)
 
-        return {"result": max(results)}
+        return ComputeMaxCurrentOfShotsExecutor2("ComputeMaxCurrentOfShotsExecutor2", transformedInput)
+
+    def compute(self, *args):
+        return self.transfrom(*args).execute()
 
 class GetShotsOfRunExecutor(Executor):
     def compute(self, *args):
@@ -82,5 +93,6 @@ class GetShotsOfRunExecutor(Executor):
 ExecutorRegistry = {
     "ComputeMaxCurrentOfShotExecutor": ComputeMaxCurrentOfShotExecutor,
     "ComputeMaxCurrentOfShotsExecutor": ComputeMaxCurrentOfShotsExecutor,
+    "ComputeMaxCurrentOfShotsExecutor2": ComputeMaxCurrentOfShotsExecutor2,
     "GetShotsOfRunExecutor": GetShotsOfRunExecutor
 }
