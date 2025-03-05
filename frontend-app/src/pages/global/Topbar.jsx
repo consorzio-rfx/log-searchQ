@@ -10,7 +10,7 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from '@mui/icons-material/Logout';
-import OAuthSignInPage from "../auth/SignIn.tsx";
+import OAuthSignInPage from "../auth/signin.tsx";
 import { useKeycloakAuthContext } from "../auth/KeycloakAuthContext.js";
 
 const Topbar = () => {
