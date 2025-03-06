@@ -1,0 +1,12 @@
+
+
+class QueryCache:
+    @staticmethod
+    def hasCached():
+        pass
+    @staticmethod
+    def getCachedResult():
+        pass
+    @staticmethod
+    def cache():
+        pass
