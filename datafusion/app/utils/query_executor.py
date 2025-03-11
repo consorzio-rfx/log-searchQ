@@ -1,4 +1,7 @@
 from pyspark.sql import SparkSession
+from ..services.query_service import QueryService
+from ..models.query_model import Query
+from .execution_unit_cache import ExecutionUnitCache
 
 class QueryInput:
     def __init__(self, sqlForm: str = None, shotList: list = None):
@@ -42,50 +45,52 @@ class QueryInputBuilder:
         
         return QueryInput(sqlForm=sqlFrom)
         
-class Query:
-    def __init__(self, queryName: str, executionUnit: str, queryDescription: str):
-        self.queryName = queryName
-        self.executionUnit = executionUnit
-        self.queryDescription = queryDescription
+class QueryExecutor:
+    def __init__(self, query: Query):
+        self.query = query
 
-    def execute(self, spark: SparkSession = None, queryInput: QueryInput = []) -> dict:
-        # Could be map-reduce
-        # results = dict(map(lambda shot: (shot, ExecutorWrapper.executeRemotely(self.executionUnit, shot)), queryInput.getShotList()))
+    def execute(self, spark: SparkSession = None, queryInput: QueryInput = None) -> dict:
+        results = dict(map(lambda shot: (shot, self.executeUnitFunction(shot)), queryInput.getShotList()))
         
-        shotsRDD = spark.sparkContext.parallelize(queryInput.getShotList())
-        resultsRDD = shotsRDD.map(lambda shot: (shot, ExecutorWrapper.executeRemotely(self.executionUnit, shot)))
-        results = resultsRDD.collectAsMap()
+        # SPARK 
+        # shotsRDD = spark.sparkContext.parallelize(queryInput.getShotList())
+        # resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executeRemotely(self.query.executionUnitFunction, shot)))
+        # results = resultsRDD.collectAsMap()
 
         return results
+    
+    def executeUnitFunction(self, shot):
+        print("executeUnitFunction", self.query.queryName, shot)
+        result = None
+        if ExecutionUnitCache.hasCached(self.query.queryName, shot):
+            result = ExecutionUnitCache.getCachedResult(self.query.queryName, shot) 
+        else:
+            result = UnitFunctionExecutor.execute(self.query.executionUnitFunction, shot) 
 
- 
-class QueryRegistry:
-    # Look up in database
+        ExecutionUnitCache.cache(self.query.queryName, shot, result)
+        return result
+
+class UnitFunctionExecutor: 
     @staticmethod
-    def getQueryByName(queryName: str) -> Query:
-        pass
-
-
-# Mock
-class ExecutorWrapper:
-    @staticmethod
-    def execute(executionUnit: str, shot: int):
+    def execute(executionUnitFunction: str, shot: int):
+        import time
         import re
+        
+        time.sleep(5)
 
-        # execute the executionUnit
-        executionName = re.search(r'\bdef (\w+)\s*\(', executionUnit).group(1)
+        executionName = re.search(r'\bdef (\w+)\s*\(', executionUnitFunction).group(1)
         localContext = {}
-        exec(executionUnit, {}, localContext)
+        exec(executionUnitFunction, {}, localContext)
         result = localContext[executionName](shot)
         return result
 
     @staticmethod
     # Mock with MDSplus operations
-    def executeRemotely(executionUnit: str, shot: int):
+    def executeRemotely(executionUnitFunction: str, shot: int):
         import pickle
         import requests
         
-        data = {"executionUnit": executionUnit, "shot": shot} 
+        data = {"executionUnitFunction": executionUnitFunction, "shot": shot} 
         response = requests.post("http://localhost:5002/execute", json=data)
         result = pickle.loads(response.content)
         return result

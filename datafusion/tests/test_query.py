@@ -1,27 +1,15 @@
-from app.utils.query import *
-import inspect
+from app import create_app
+from app.services.query_service import QueryService
+from app.utils.query_executor import QueryInput, QueryInputBuilder, QueryExecutor
 from pyspark.sql import SparkSession
 
-def testFunc(shot: int) -> dict:
-    result = {}
-    result["it_data"] = shot
-    result["it_time"] = shot
-    return result
-
-def testFunc(shot: int) -> dict:
-    value = shot * shot
-    
-    result = {}
-    result["it_data"] = value
-    result["it_time"] = value
-
-    return result
 if __name__ == '__main__':
+    app = create_app()
     # Initialize SparkSession
-    spark = SparkSession.builder.appName("HelloWorld").master("local[*]").getOrCreate()
+    # spark = SparkSession.builder.appName("HelloWorld").master("local[*]").getOrCreate()
 
-    executionUnit = r"""
-def testFunc(shot: int) -> dict:
+    executionUnitFunction1 = r"""
+def testFunc1(shot: int) -> dict:
     import MDSplus as mds
 
     tree = mds.Tree('RFX', shot)
@@ -37,17 +25,20 @@ def testFunc(shot: int) -> dict:
 
     return result
 """
-    # executionUnit = inspect.getsource(testFunc)
 
-    queryInput = QueryInput(shotList=[39390, 39391])
-    query = Query("testQuery", executionUnit, "testQuery description")
-    print(query.execute(spark=spark, queryInput=queryInput))
+    executionUnitFunction2 = r"""
+def testFunc2(shot: int) -> dict:
+    result = {}
+    result["it_data"] = shot
+    result["it_time"] = shot
+    return result
+"""
 
+    with app.app_context():
+        # QueryService.createQuery("testQuery1", "testQueryDescription1", executionUnitFunction1)
+        # QueryService.createQuery("testQuery2", "testQueryDescription2", executionUnitFunction2)
 
-    # q = QueryRegistry.getQueryByName("testQuery")
-    # q.execute(queryInput)
-
-    # query = QueryInputBuilder().run_equal_to(2).pre_brief_contain("test").build()
-    # print(query.getSqlFrom())
-
-    # query.getShotList()
+        query = QueryService.getQuery("testQuery2")
+        queryExecutor = QueryExecutor(query)
+        queryInput = QueryInput(shotList=[39390, 39391])
+        print(queryExecutor.execute(queryInput=queryInput))
