@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import { tokens } from "../../theme";
-import { Box, Button, Divider, FormLabel, TextField, Typography } from "@mui/material";
+import { AppBar, Box, Button, Divider, FormLabel, IconButton, TextField, Toolbar, Typography } from "@mui/material";
 import Header from "../../components/Header";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useRef, useState } from "react";
@@ -12,6 +12,9 @@ import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from 'react-markdown';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const Query = () => {
@@ -21,6 +24,12 @@ const Query = () => {
     const [rows, setRows] = useState([]);
     const [selectedQuery, setSelectedQuery] = useState(null);
     const selectedQueryRef = useRef(null);
+
+    const navigate = useNavigate();
+
+    const onExecuteClick = () => {
+      navigate('/execute');
+    };
 
     const handleRowClick = (params) => {
         selectedQueryRef.current = params.row;
@@ -170,7 +179,7 @@ const Query = () => {
             <FormLabel>
                 executionUnitFunction
             </FormLabel>
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 <Editor
                     height="75vh"
                     defaultLanguage="python"
@@ -180,49 +189,53 @@ const Query = () => {
                 />
             </Box>
 
-            {selectedQuery.id != null ?
-            // SELECT
-            <Box display="flex" justifyContent="space-between" p={2}>
-                <Button 
-                sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DoneIcon />} onClick={onUpdateQuery}
-                >
-                UPDATE QUERY
-                </Button>
+            <AppBar position="sticky" sx={{ top: 'auto', bottom: 0, bgcolor: '#FFFFFF'}}>
+              {selectedQuery.id != null ?
+              // SELECT
+              <Box display="flex" justifyContent="space-between" p={2}>
+                  <Button 
+                  sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
+                  size="small" variant="standard" startIcon={<DoneIcon />} onClick={onUpdateQuery}
+                  >
+                  UPDATE QUERY
+                  </Button>
 
-                <Button 
-                sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteQuery}
-                >
-                DELETE QUERY 
-                </Button>
+                  <Button 
+                  sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
+                  size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteQuery}
+                  >
+                  DELETE QUERY 
+                  </Button>
 
-                <Button 
-                sx={{ backgroundColor: colors.greenAccent[600], color: 'white', '&:hover': { backgroundColor: colors.greenAccent[400] } }} 
-                size="small" variant="standard" startIcon={<CachedIcon />} // onClick={onShowShot}
-                >
-                EXECUTE 
-                </Button>
+                  <Button 
+                  sx={{ backgroundColor: colors.greenAccent[600], color: 'white', '&:hover': { backgroundColor: colors.greenAccent[400] } }} 
+                  size="small" variant="standard" startIcon={<CachedIcon />} onClick={onExecuteClick}
+                  >
+                  EXECUTE 
+                  </Button>
 
-                <Button 
-                sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
-                size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelQuery}
-                >
-                CANCEL 
-                </Button>
-            </Box>
-            :
-            // ADD 
-            <Box display="flex" justifyContent="center" p={2}>
-                <Button 
-                sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitQuery}
-                >
-                SUBMIT QUERY 
-                </Button>
-            </Box>}
+                  <Button 
+                  sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+                  size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelQuery}
+                  >
+                  CANCEL 
+                  </Button>
+              </Box>
+              :
+              // ADD 
+              <Box display="flex" justifyContent="center" p={2}>
+                  <Button 
+                  sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
+                  size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitQuery}
+                  >
+                  SUBMIT QUERY 
+                  </Button>
+              </Box>}
+            </AppBar>
 
             <Divider sx={{ my: 2 }} />
+
+
             
         </Box>)
     }
