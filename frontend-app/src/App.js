@@ -8,6 +8,7 @@ import Home from "./pages/home";
 import Runs from "./pages/logbook/runs";
 import { KeycloakAuthProvider } from "./pages/auth/KeycloakAuthContext";
 import Shots from "./pages/logbook/shots";
+import Query from "./pages/query/queries"
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/" element={<Home />}/>
                 <Route path="/runs" element={<Runs />} />
                 <Route path="/shots" element={<Shots />} />
+                <Route path="/queries" element={<Query />} />
               </Routes>
             </main>
           </div>

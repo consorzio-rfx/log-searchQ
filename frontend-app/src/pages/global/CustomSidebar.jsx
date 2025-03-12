@@ -7,7 +7,8 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import DatasetOutlinedIcon from "@mui/icons-material/DatasetOutlined";
-import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
+import CodeIcon from '@mui/icons-material/Code';
+import CachedIcon from '@mui/icons-material/Cached';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   return (
@@ -42,7 +43,7 @@ const CustomSidebar = () => {
         },
       }}
     >
-      <Sidebar collapsed={isCollapsed}>
+      <Sidebar style={{ height: "100vh" }} collapsed={isCollapsed}>
         <Menu>
           {/* LOGO AND MENU ICON */}
           <MenuItem
@@ -69,8 +70,9 @@ const CustomSidebar = () => {
             <Item title="Runs" to="/runs" icon={<StorageOutlinedIcon />} selected={selected} setSelected={setSelected} />
             <Item title="Shots" to="/shots" icon={<DatasetOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-            <Typography variant="h6" sx={{ m: "15px 0 5px 20px" }}>MDSplus</Typography>
-            <Item title="MDSplus" to="/" icon={<FolderOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Typography variant="h6" sx={{ m: "15px 0 5px 20px" }}>Query</Typography>
+            <Item title="Queries" to="/queries" icon={<CodeIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Executions" to="/" icon={<CachedIcon />} selected={selected} setSelected={setSelected} />
           </Box>
         </Menu>
       </Sidebar>
