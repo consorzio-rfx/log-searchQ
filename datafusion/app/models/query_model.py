@@ -5,8 +5,8 @@ class Query(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     queryName = db.Column(db.String(256), unique=True, nullable=False) 
-    queryDescription = db.Column(db.String(1024), nullable=False)
-    executionUnitFunction = db.Column(db.String, nullable=False)
+    queryDescription = db.Column(db.String(1024))
+    executionUnitFunction = db.Column(db.String)
 
     def to_dict(self):
         return {

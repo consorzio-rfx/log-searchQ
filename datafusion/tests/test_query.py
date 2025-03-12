@@ -38,7 +38,7 @@ def testFunc2(shot: int) -> dict:
         # QueryService.createQuery("testQuery1", "testQueryDescription1", executionUnitFunction1)
         # QueryService.createQuery("testQuery2", "testQueryDescription2", executionUnitFunction2)
 
-        query = QueryService.getQuery("testQuery2")
+        query = QueryService.getQueryByName("testQuery2")
         queryExecutor = QueryExecutor(query)
         queryInput = QueryInput(shotList=[39390, 39391])
         print(queryExecutor.execute(queryInput=queryInput))

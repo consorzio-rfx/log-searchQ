@@ -20,27 +20,92 @@ const Query = () => {
 
     const [rows, setRows] = useState([]);
     const [selectedQuery, setSelectedQuery] = useState(null);
+    const selectedQueryRef = useRef(null);
 
     const handleRowClick = (params) => {
+        selectedQueryRef.current = params.row;
         setSelectedQuery(params.row);
     };
 
+    const onTextFieldChange = (event) => {
+      const { name, value } = event.target;
+      selectedQueryRef.current[name] = value;
+    }
+
+    const handleQueryDescriptionChange = (value) => {
+      selectedQueryRef.current["queryDescription"] = value
+    };
+
+    const handleExecutionUnitFunctionChange = (value) => {
+      selectedQueryRef.current["executionUnitFunction"] = value
+    };
+    
     useEffect(() => {
         queriesService.getAllQueries().then((res) => {
             setRows(res.data);
         })
     }, []);
 
-
     const onAddQuery = () => {
         const emptyQuery = {
             id: null,
             queryName: null,
-            queryDescription: null,
-            executionUnitFunction: null,
+            queryDescription: "",
+            executionUnitFunction: "",
         };
-    
+        
+        selectedQueryRef.current = emptyQuery
         setSelectedQuery(emptyQuery);
+    }
+
+    const onUpdateQuery = () => {
+      const newQuery = selectedQueryRef.current;
+      queriesService
+        .updateQuery(newQuery)
+        .then((res) => {
+          const dbQuery = res.data;
+          setRows(rows.map((r) => (r.id === newQuery.id ? dbQuery : r)));
+        })
+        .catch((err) => {
+          setRows(rows);
+        });
+    }
+
+    const onDeleteQuery = () => {
+      const curQuery = selectedQueryRef.current;
+      queriesService 
+        .deleteQuery(curQuery)
+        .then((res) => {
+          const dbQuery = res.data;
+          setRows(rows.filter((r) => r.id !== dbQuery.id));
+          selectedQueryRef.current = null;
+          setSelectedQuery(null);
+        })
+        .catch((err) => {
+          setRows(rows);
+        });
+    }
+
+    const onCancelQuery = () => {
+      selectedQueryRef.current = null;
+      setSelectedQuery(null);
+    }
+
+    const onSubmitQuery = () => {
+      const newQuery = selectedQueryRef.current;
+      queriesService
+        .createQuery(newQuery)
+        .then((res) => {
+          selectedQueryRef.current = null;
+          setSelectedQuery(null);
+
+          queriesService.getAllQueries().then((res) => {
+            setRows(res.data);
+          })
+        })
+        .catch((err) => {
+          // 
+        });
     }
 
     function CRUDBoxQuery() {
@@ -76,7 +141,7 @@ const Query = () => {
                     multiline
                     slotProps={{ inputLabel: {shrink: true} }} 
                     defaultValue={selectedQuery.queryName}
-                    // onChange={onTextFieldChange}
+                    onChange={onTextFieldChange}
                 />
             </Box>
 
@@ -90,6 +155,7 @@ const Query = () => {
                         defaultLanguage="markdown"
                         theme="vs"
                         defaultValue={selectedQuery.queryDescription}
+                        onChange={handleQueryDescriptionChange}
                     />
                 </Box>
                 
@@ -110,6 +176,7 @@ const Query = () => {
                     defaultLanguage="python"
                     theme="vs-dark"
                     defaultValue={selectedQuery.executionUnitFunction}
+                    onChange={handleExecutionUnitFunctionChange}
                 />
             </Box>
 
@@ -118,14 +185,14 @@ const Query = () => {
             <Box display="flex" justifyContent="space-between" p={2}>
                 <Button 
                 sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DoneIcon />} // onClick={onUpdateRun}
+                size="small" variant="standard" startIcon={<DoneIcon />} onClick={onUpdateQuery}
                 >
                 UPDATE QUERY
                 </Button>
 
                 <Button 
                 sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DeleteIcon />} // onClick={onDeleteRun}
+                size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteQuery}
                 >
                 DELETE QUERY 
                 </Button>
@@ -139,7 +206,7 @@ const Query = () => {
 
                 <Button 
                 sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
-                size="small" variant="standard" startIcon={<CancelIcon />} // onClick={onCancelRun}
+                size="small" variant="standard" startIcon={<CancelIcon />} onClick={onCancelQuery}
                 >
                 CANCEL 
                 </Button>
@@ -149,7 +216,7 @@ const Query = () => {
             <Box display="flex" justifyContent="center" p={2}>
                 <Button 
                 sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-                size="small" variant="standard" startIcon={<DoneIcon />} // onClick={onSubmitRun}
+                size="small" variant="standard" startIcon={<DoneIcon />} onClick={onSubmitQuery}
                 >
                 SUBMIT QUERY 
                 </Button>
