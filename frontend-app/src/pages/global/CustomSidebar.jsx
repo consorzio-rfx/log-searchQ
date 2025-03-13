@@ -9,6 +9,7 @@ import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import DatasetOutlinedIcon from "@mui/icons-material/DatasetOutlined";
 import CodeIcon from '@mui/icons-material/Code';
 import CachedIcon from '@mui/icons-material/Cached';
+import FunctionsIcon from '@mui/icons-material/Functions';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   return (
@@ -72,7 +73,8 @@ const CustomSidebar = () => {
 
             <Typography variant="h6" sx={{ m: "15px 0 5px 20px" }}>Query</Typography>
             <Item title="Queries" to="/queries" icon={<CodeIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Executions" to="/" icon={<CachedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Execute Query" to="/executeQuery" icon={<FunctionsIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Execution Units" to="/executionUnits" icon={<CachedIcon />} selected={selected} setSelected={setSelected} />
           </Box>
         </Menu>
       </Sidebar>

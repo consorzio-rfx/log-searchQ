@@ -28,7 +28,7 @@ const Query = () => {
     const navigate = useNavigate();
 
     const onExecuteClick = () => {
-      navigate('/execute');
+      navigate('/executeQuery');
     };
 
     const handleRowClick = (params) => {
@@ -255,7 +255,8 @@ const Query = () => {
           field: "queryDescription",
           headerName: "queryDescription",
           flex: 1,
-        },        {
+        },        
+        {
           field: "executionUnitFunction",
           headerName: "executionUnitFunction",
           flex: 1,

@@ -9,7 +9,8 @@ import Runs from "./pages/logbook/runs";
 import { KeycloakAuthProvider } from "./pages/auth/KeycloakAuthContext";
 import Shots from "./pages/logbook/shots";
 import Query from "./pages/query/queries"
-import Execute from "./pages/query/execute";
+import ExecutionUnits from "./pages/query/executionUnits";
+import ExecuteQuery from "./pages/query/executeQuery";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -29,7 +30,8 @@ function App() {
                 <Route path="/runs" element={<Runs />} />
                 <Route path="/shots" element={<Shots />} />
                 <Route path="/queries" element={<Query />} />
-                <Route path="/execute" element={<Execute />} />
+                <Route path="/executeQuery" element={<ExecuteQuery />} />
+                <Route path="/executionUnits" element={<ExecutionUnits />} />
               </Routes>
             </main>
           </div>
