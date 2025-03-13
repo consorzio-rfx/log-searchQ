@@ -3,6 +3,7 @@ from .database.db import init_db
 from .routers.user_routes import user_blueprint
 from .routers.query_routes import query_blueprint
 from .routers.execution_unit_routes import execution_unit_blueprint
+from .routers.execute_query_routes import execute_query_blueprint
 from .middleware.cors_middleware import CORSMiddleware
 from app.config import Config
 
@@ -25,5 +26,6 @@ def create_app():
     app.register_blueprint(user_blueprint)
     app.register_blueprint(query_blueprint)
     app.register_blueprint(execution_unit_blueprint)
+    app.register_blueprint(execute_query_blueprint)
 
     return app
