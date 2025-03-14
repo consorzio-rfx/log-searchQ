@@ -34,9 +34,20 @@ def testFunc2(shot: int) -> dict:
     return result
 """
 
+    executionUnitFunction3 = r"""
+def testFunc2(shot: int) -> dict:
+    import numpy as np    
+
+    result = {}
+    result["it_data"] = shot * np.ones((2,)) 
+    result["it_time"] = np.arange(0, 2, 1)
+    return result
+"""
+
     with app.app_context():
         # QueryService.createQuery("testQuery1", "testQueryDescription1", executionUnitFunction1)
         # QueryService.createQuery("testQuery2", "testQueryDescription2", executionUnitFunction2)
+        # QueryService.createQuery("testQuery3", "testQueryDescription3", executionUnitFunction3)
 
         query = QueryService.getQueryByName("testQuery2")
         queryExecutor = QueryExecutor(query)

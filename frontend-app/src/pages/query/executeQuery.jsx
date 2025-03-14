@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, FormLabel, TextField, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography } from "@mui/material";
 import Header from "../../components/Header";
 import { useTheme } from "@emotion/react";
 import { tokens } from "../../theme";
@@ -9,27 +9,39 @@ import { useRef, useState } from "react";
 import executeQueryService from "../../api/executeQueryService";
 import { Editor } from "@monaco-editor/react";
 import { DataGrid } from "@mui/x-data-grid";
-
+import DoneIcon from '@mui/icons-material/Done';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
 
 const ExecuteQuery = ({ Query }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  // For TextField input
   const queryNameRef = useRef(null);
   const searchedShotsRef = useRef(null);
 
+  // For showing details
   const [selectedQuery, setSelectedQuery] = useState(null)
   const [searchedShots, setSearchedShots] = useState(null)
+
+  const [loading, setLoading] = useState(false)
 
   const onQueryNameChange = (event) => {
     const { name, value } = event.target;
     queryNameRef.current = value;
   }
 
-  const onSubmitQueryName = () => {
+  const onShowQuery = () => {
     executeQueryService.selectQuery(queryNameRef.current).then((res) => {
       setSelectedQuery(res.data)
+    }).catch((err) => {
+      //
     })
+  }
+
+  const onClearShowQuery = () => {
+    queryNameRef.current = null;
+    setSelectedQuery(null)
   }
 
   const QueryComponent = ( {selectedQuery} ) => {
@@ -119,7 +131,14 @@ const ExecuteQuery = ({ Query }) => {
       }));
 
       setSearchedShots(shotsWithIds)
+    }).catch((err) => {
+      //
     })
+  }
+
+  const onClearShowShots = () => {
+    searchedShotsRef.current = null;
+    setSearchedShots(null)
   }
 
   const ShotsComponent = ( {searchedShots} ) => {
@@ -217,6 +236,22 @@ const ExecuteQuery = ({ Query }) => {
         </Box>
     );
   }
+
+  const onExecuteClick = () => {
+    const currentQueryName = queryNameRef.current;
+    const currentSearchedShots = searchedShotsRef.current;
+
+    if (currentQueryName === null || currentSearchedShots === null) {
+      return;
+    }
+
+    setLoading(true);
+    executeQueryService.execute(currentQueryName, currentSearchedShots).then((res) => {
+      //
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
   
   const SelectQueryDetails = () => {
     return (        
@@ -231,15 +266,24 @@ const ExecuteQuery = ({ Query }) => {
           multiline
           slotProps={{ inputLabel: {shrink: true} }}
           placeholder="e.g. testQuery1"
+          defaultValue={queryNameRef.current}
           onChange={onQueryNameChange}
         />
 
         <Button 
           sx={{ backgroundColor: colors.blueAccent[600], color: 'white', '&:hover': { backgroundColor: colors.blueAccent[400] } }} 
-          size="small" variant="standard" startIcon={<SearchIcon />} onClick={onSubmitQueryName}
+          size="small" variant="standard" startIcon={<SearchIcon />} onClick={onShowQuery}
           >
           SHOW QUERY 
         </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<NotInterestedIcon />} onClick={onClearShowQuery}
+          >
+          CLEAR 
+        </Button>
+
       </Box>
       
       <Divider sx={{ my: 2 }} />
@@ -263,6 +307,7 @@ const ExecuteQuery = ({ Query }) => {
           multiline
           slotProps={{ inputLabel: {shrink: true} }}
           placeholder="e.g. 39390, 39391"
+          defaultValue={searchedShotsRef.current}
           onChange={onShotsChange}
         />
 
@@ -272,6 +317,14 @@ const ExecuteQuery = ({ Query }) => {
           >
           SHOW SHOTS 
         </Button>
+
+        <Button 
+          sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] } }} 
+          size="small" variant="standard" startIcon={<NotInterestedIcon />} onClick={onClearShowShots}
+          >
+          CLEAR 
+        </Button>
+
       </Box> 
 
       <Divider sx={{ my: 2 }} />
@@ -311,49 +364,51 @@ const ExecuteQuery = ({ Query }) => {
 
       >
 
-      <div>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            <Typography component="span">SELECT QUERY</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+        <div>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+            >
+              <Typography component="span">SELECT QUERY</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
 
-            <SelectQueryDetails/>
+              <SelectQueryDetails/>
+            
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2-content"
+              id="panel2-header"
+            >
+              <Typography component="span">SEARCH SHOTS</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+
+            <SearchShotsDetails/>
+            
+            </AccordionDetails>
+          </Accordion>
           
-          </AccordionDetails>
-        </Accordion>
+        </div>
 
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            <Typography component="span">SEARCH SHOTS</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+        <Box display="flex" justifyContent="center" p={2}>
+          <Button 
+            sx={{ backgroundColor: colors.greenAccent[600], color: 'white', '&:hover': { backgroundColor: colors.greenAccent[400] } }} 
+            size="small" variant="standard" startIcon={<FunctionsIcon />} onClick={onExecuteClick}
+            >
+            EXECUTE
+          </Button> 
+        </Box>
 
-           <SearchShotsDetails/>
-          
-          </AccordionDetails>
-        </Accordion>
-        
-      </div>
-
-      <Box display="flex" justifyContent="center" p={2}>
-        <Button 
-          sx={{ backgroundColor: colors.greenAccent[600], color: 'white', '&:hover': { backgroundColor: colors.greenAccent[400] } }} 
-          size="small" variant="standard" startIcon={<FunctionsIcon />} // onClick={onExecuteClick}
-          >
-          EXECUTE
-        </Button> 
-      </Box>
-
-
+        <Box display="flex" justifyContent="center">
+          {loading === true ? <CircularProgress color="secondary"/> : <DoneIcon color="secondary"/> }
+        </Box>
       </Box>
 
     </Box>
