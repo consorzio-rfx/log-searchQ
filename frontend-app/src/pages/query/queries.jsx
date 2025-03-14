@@ -12,8 +12,11 @@ import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from 'react-markdown';
-import MenuIcon from '@mui/icons-material/Menu';
+import SyncIcon from '@mui/icons-material/Sync';
 import { useNavigate } from 'react-router-dom';
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 
 
@@ -119,6 +122,11 @@ const Query = () => {
 
     function CRUDBoxQuery() {
         const ref = useRef(null);
+        const [previewTrigger, setPreviewTrigger] = useState(0);
+
+        const onPreviewTrigger = () => {
+          setPreviewTrigger((prev) => (1 - prev))
+        }
     
         useEffect(() => {
           ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -154,25 +162,35 @@ const Query = () => {
                 />
             </Box>
 
-            <FormLabel>
-                    queryDescription
-            </FormLabel>
+            <Box sx={{ display: 'flex' }}>
+              <FormLabel>
+                      queryDescription
+              </FormLabel>
+
+              <Button 
+                  sx={{ backgroundColor: colors.grey[600], color: 'white', '&:hover': { backgroundColor: colors.grey[400] }, marginLeft: 1, marginBottom: 1 }} 
+                  size="small" variant="standard" startIcon={<SyncIcon />} onClick={onPreviewTrigger}
+                  >
+                  PREVIEW 
+                  </Button>
+            </Box>
+
             <Box sx={{ display: 'flex', paddingBottom: '10px' }}>
                 <Box sx={{ paddingRight: '10px', width: '50%'}}>
                     <Editor
-                        height="25vh"
+                        height="50vh"
                         defaultLanguage="markdown"
                         theme="vs"
                         defaultValue={selectedQuery.queryDescription}
                         onChange={handleQueryDescriptionChange}
                     />
                 </Box>
-                
-                {/* <Box sx={{ paddingRight: '10px' }}>
-                    <ReactMarkdown>
+
+                <Box sx={{ paddingRight: '10px' }}>
+                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                         {selectedQuery.queryDescription}
                     </ReactMarkdown>
-                </Box> */}
+                </Box>
 
             </Box>
 
