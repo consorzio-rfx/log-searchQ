@@ -46,51 +46,56 @@ class QueryInputBuilder:
         return QueryInput(sqlForm=sqlFrom)
         
 class QueryExecutor:
-    def __init__(self, query: Query):
-        self.query = query
-
-    def execute(self, spark: SparkSession = None, queryInput: QueryInput = None) -> dict:
-        results = dict(map(lambda shot: (shot, self.executeUnitFunction(shot)), queryInput.getShotList()))
-        
-        # SPARK 
-        # shotsRDD = spark.sparkContext.parallelize(queryInput.getShotList())
-        # resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executeRemotely(self.query.executionUnitFunction, shot)))
-        # results = resultsRDD.collectAsMap()
-
-        return results
-    
-    def executeUnitFunction(self, shot):
-        print("executeUnitFunction", self.query.queryName, shot)
-        result = None
-        if ExecutionUnitCache.hasCached(self.query.queryName, shot):
-            result = ExecutionUnitCache.getCachedResult(self.query.queryName, shot) 
-        else:
-            result = UnitFunctionExecutor.execute(self.query.executionUnitFunction, shot) 
-
-        ExecutionUnitCache.cache(self.query.queryName, shot, result)
-        return result
-
-class UnitFunctionExecutor: 
     @staticmethod
-    def execute(executionUnitFunction: str, shot: int):
+    def execute(spark: SparkSession = None, query: Query = None, queryInput: QueryInput = None) -> dict:
+        shotList = queryInput.getShotList()
+        cachedResults = {}
+        nonCachedShotList = []
+
+        # Get cached results
+        for shot in shotList:
+            if ExecutionUnitCache.hasCached(query.queryName, shot):
+                cachedResults[shot] = ExecutionUnitCache.getCachedResult(query.queryName, shot)
+            else:
+                nonCachedShotList.append(shot)
+
+        # Using Spark
+        nonCachedShotsRDD = spark.sparkContext.parallelize(nonCachedShotList)
+        nonCachedResultsRDD = nonCachedShotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShot(query, shot)))
+        nonCachedResults = nonCachedResultsRDD.collectAsMap()
+
+        # Cache
+        for nonCachedShot, nonCachedResult in nonCachedResults.items():
+            ExecutionUnitCache.cache(query.queryName, nonCachedShot, nonCachedResult)
+
+        return cachedResults | nonCachedResults 
+    
+class UnitFunctionExecutor:
+    @staticmethod
+    def executePerShot(query: Query, shot: int):
         import time
         import re
-        
-        time.sleep(5)
 
-        executionName = re.search(r'\bdef (\w+)\s*\(', executionUnitFunction).group(1)
+        print(query.executionUnitFunction, shot)
+        # Mock
+        time.sleep(10)
+
+        executionName = re.search(r'\bdef (\w+)\s*\(', query.executionUnitFunction).group(1)
         localContext = {}
-        exec(executionUnitFunction, {}, localContext)
+        exec(query.executionUnitFunction, {}, localContext)
         result = localContext[executionName](shot)
         return result
 
     @staticmethod
     # Mock with MDSplus operations
-    def executeRemotely(executionUnitFunction: str, shot: int):
+    def executePerShotRemotely(query: Query, shot: int):
         import pickle
         import requests
+
+        print(query.executionUnitFunction, shot)
         
-        data = {"executionUnitFunction": executionUnitFunction, "shot": shot} 
+        data = {"executionUnitFunction": query.executionUnitFunction, "shot": shot} 
         response = requests.post("http://localhost:5002/execute", json=data)
         result = pickle.loads(response.content)
         return result
+

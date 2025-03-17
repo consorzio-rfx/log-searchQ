@@ -4,9 +4,9 @@ from app.utils.query_executor import QueryInput, QueryInputBuilder, QueryExecuto
 from pyspark.sql import SparkSession
 
 if __name__ == '__main__':
-    app = create_app()
+    spark = SparkSession.builder.appName("test").master("local[*]").getOrCreate()
+    app = create_app(spark)
     # Initialize SparkSession
-    # spark = SparkSession.builder.appName("HelloWorld").master("local[*]").getOrCreate()
 
     executionUnitFunction1 = r"""
 def testFunc1(shot: int) -> dict:
@@ -49,7 +49,6 @@ def testFunc2(shot: int) -> dict:
         # QueryService.createQuery("testQuery2", "testQueryDescription2", executionUnitFunction2)
         # QueryService.createQuery("testQuery3", "testQueryDescription3", executionUnitFunction3)
 
-        query = QueryService.getQueryByName("testQuery2")
-        queryExecutor = QueryExecutor(query)
+        query = QueryService.getQueryByName("testQuery3")
         queryInput = QueryInput(shotList=[39390, 39391])
-        print(queryExecutor.execute(queryInput=queryInput))
+        print(QueryExecutor.execute(spark=spark, query=query, queryInput=queryInput))
