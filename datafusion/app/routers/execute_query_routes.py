@@ -4,9 +4,8 @@ from ..services.query_service import QueryService
 from ..database.db import db
 from sqlalchemy import text
 from ..utils.query_executor import QueryExecutor, QueryInput
-from pyspark.sql import SparkSession
 
-def createExecuteQueryBlueprint(spark: SparkSession):
+def createExecuteQueryBlueprint(sparkBuilder):
     execute_query_blueprint = Blueprint('execute_query', __name__)
 
     @execute_query_blueprint.route('/api/executeQuery/selectQuery', methods=['GET'])
@@ -31,7 +30,10 @@ def createExecuteQueryBlueprint(spark: SparkSession):
             abort(404)
 
         queryInput = QueryInput(shotList=shotList)
-        result = QueryExecutor.execute(spark=spark, query=query, queryInput=queryInput)
+        
+        sparkContext = sparkBuilder.getOrCreate().sparkContext
+        sparkContext.addPyFile("app.zip")
+        result = QueryExecutor.execute(sparkContext=sparkContext, query=query, queryInput=queryInput)
         print(result)
         return jsonify({ "status": "cached" })
     

@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.context import SparkContext
 from ..services.query_service import QueryService
 from ..models.query_model import Query
 from .execution_unit_cache import ExecutionUnitCache
@@ -47,26 +48,30 @@ class QueryInputBuilder:
         
 class QueryExecutor:
     @staticmethod
-    def execute(spark: SparkSession = None, query: Query = None, queryInput: QueryInput = None) -> dict:
+    def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None, cache: bool = False) -> dict:
         shotList = queryInput.getShotList()
         cachedResults = {}
         nonCachedShotList = []
 
         # Get cached results
-        for shot in shotList:
-            if ExecutionUnitCache.hasCached(query.queryName, shot):
-                cachedResults[shot] = ExecutionUnitCache.getCachedResult(query.queryName, shot)
-            else:
-                nonCachedShotList.append(shot)
+        if cache:
+            for shot in shotList:
+                if ExecutionUnitCache.hasCached(query.queryName, shot):
+                    cachedResults[shot] = ExecutionUnitCache.getCachedResult(query.queryName, shot)
+                else:
+                    nonCachedShotList.append(shot)
+        else:
+            nonCachedShotList = shotList
 
         # Using Spark
-        nonCachedShotsRDD = spark.sparkContext.parallelize(nonCachedShotList)
+        nonCachedShotsRDD = sparkContext.parallelize(nonCachedShotList)
         nonCachedResultsRDD = nonCachedShotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShot(query, shot)))
         nonCachedResults = nonCachedResultsRDD.collectAsMap()
 
         # Cache
-        for nonCachedShot, nonCachedResult in nonCachedResults.items():
-            ExecutionUnitCache.cache(query.queryName, nonCachedShot, nonCachedResult)
+        if cache:
+            for nonCachedShot, nonCachedResult in nonCachedResults.items():
+                ExecutionUnitCache.cache(query.queryName, nonCachedShot, nonCachedResult)
 
         return cachedResults | nonCachedResults 
     

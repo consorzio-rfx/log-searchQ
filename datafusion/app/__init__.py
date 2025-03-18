@@ -6,9 +6,8 @@ from .routers.execution_unit_routes import execution_unit_blueprint
 from .routers.execute_query_routes import createExecuteQueryBlueprint
 from .middleware.cors_middleware import CORSMiddleware
 from app.config import Config
-from pyspark.sql import SparkSession
 
-def create_app(spark: SparkSession):
+def create_app(sparkBuilder):
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -27,6 +26,6 @@ def create_app(spark: SparkSession):
     app.register_blueprint(user_blueprint)
     app.register_blueprint(query_blueprint)
     app.register_blueprint(execution_unit_blueprint)
-    app.register_blueprint(createExecuteQueryBlueprint(spark))
+    app.register_blueprint(createExecuteQueryBlueprint(sparkBuilder))
 
     return app
