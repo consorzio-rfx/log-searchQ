@@ -5,11 +5,10 @@ from .routers.query_routes import query_blueprint
 from .routers.execution_unit_routes import execution_unit_blueprint
 from .routers.execute_query_routes import createExecuteQueryBlueprint
 from .middleware.cors_middleware import CORSMiddleware
-from app.config import Config
 
-def create_app(sparkBuilder):
+def create_app(sparkBuilder, config):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config)
 
     # Initialize the database
     init_db(app)

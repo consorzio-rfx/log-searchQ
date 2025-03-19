@@ -48,34 +48,36 @@ class QueryInputBuilder:
         
 class QueryExecutor:
     @staticmethod
-    def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None, cache: bool = False) -> dict:
+    def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None) -> dict:
         shotList = queryInput.getShotList()
-        cachedResults = {}
-        nonCachedShotList = []
+        shotsRDD = sparkContext.parallelize(shotList, numSlices=2)
+        resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, True)))
+        results = resultsRDD.collectAsMap()
 
-        # Get cached results
-        if cache:
-            for shot in shotList:
-                if ExecutionUnitCache.hasCached(query.queryName, shot):
-                    cachedResults[shot] = ExecutionUnitCache.getCachedResult(query.queryName, shot)
-                else:
-                    nonCachedShotList.append(shot)
-        else:
-            nonCachedShotList = shotList
-
-        # Using Spark
-        nonCachedShotsRDD = sparkContext.parallelize(nonCachedShotList, numSlices=2)
-        nonCachedResultsRDD = nonCachedShotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShot(query, shot)))
-        nonCachedResults = nonCachedResultsRDD.collectAsMap()
-
-        # Cache
-        if cache:
-            for nonCachedShot, nonCachedResult in nonCachedResults.items():
-                ExecutionUnitCache.cache(query.queryName, nonCachedShot, nonCachedResult)
-
-        return cachedResults | nonCachedResults 
+        return results 
     
 class UnitFunctionExecutor:
+    @staticmethod
+    def executePerShotWithCache(query: Query, shot: int, cache = False):
+        from app import create_app
+        from app.config import ConfigSpark
+
+        app = create_app(None, ConfigSpark)
+        
+        result = None
+        with app.app_context():
+            if cache and ExecutionUnitCache.hasCached(query.queryName, shot):
+                print("CACHE HITTTTTTTTT")
+                result = ExecutionUnitCache.getCachedResult(query.queryName, shot)
+            else:
+                result = UnitFunctionExecutor.executePerShot(query, shot)
+
+            if cache:
+                ExecutionUnitCache.cache(query.queryName, shot, result)
+
+        return result
+
+
     @staticmethod
     def executePerShot(query: Query, shot: int):
         import time
