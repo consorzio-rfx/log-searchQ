@@ -64,7 +64,7 @@ class QueryExecutor:
             nonCachedShotList = shotList
 
         # Using Spark
-        nonCachedShotsRDD = sparkContext.parallelize(nonCachedShotList)
+        nonCachedShotsRDD = sparkContext.parallelize(nonCachedShotList, numSlices=2)
         nonCachedResultsRDD = nonCachedShotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShot(query, shot)))
         nonCachedResults = nonCachedResultsRDD.collectAsMap()
 
