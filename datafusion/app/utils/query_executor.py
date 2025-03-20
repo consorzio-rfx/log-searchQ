@@ -3,6 +3,8 @@ from pyspark.context import SparkContext
 from ..services.query_service import QueryService
 from ..models.query_model import Query
 from .execution_unit_cache import ExecutionUnitCache
+from ..database.db import db
+from sqlalchemy import text
 
 class QueryInput:
     def __init__(self, sqlForm: str = None, shotList: list = None):
@@ -10,48 +12,79 @@ class QueryInput:
         self.shotList = shotList
 
     def getShotList(self):
-        if self.shotList is None:
-            # execute sql
-            pass
+        if (self.shotList is None) and (self.sqlForm):
+            print(self.sqlForm)
+            sql = text(self.sqlForm)
+            result = db.session.execute(sql).mappings().all()
+            self.shotList = [row["shot"] for row in result]
 
         return self.shotList
     
-    def getSqlFrom(self):
+    def getShotDetails(self):
+        shotList = self.getShotList()
+        if (shotList is None) or (len(shotList) == 0):
+            return []
+        
+        sql = text("SELECT * FROM shots WHERE shot IN ({})".format(", ".join(map(str, shotList))))
+        result = db.session.execute(sql).mappings().all()
+        return result
+    
+    def _getSqlFrom(self):
         return self.sqlForm
 
 class QueryInputBuilder:
-    # Mapping to a sort of SQL query
-    def __init__(self):
-        self.run = None
-        self.pre_brief = None
-        self.post_brief = None
-        self.pre_keywords = None
-        self.post_keywords = None
-        self.quality = None
-
-    def run_equal_to(self, run: int):
+    def __init__(self, shotList = [], run = -1, pre_brief = '', post_brief = '', pre_keywords = '', post_keywords = ''):
+        self.shotList = shotList 
+        
         self.run = run
-        return self
-
-    def pre_brief_contain(self, pre_brief: str):
         self.pre_brief = pre_brief
-        return self
+        self.post_brief = post_brief
+        self.pre_keywords = pre_keywords
+        self.post_keywords = post_keywords
 
     def build(self) -> QueryInput:
-        sqlFrom = "SELECT shot from shots WHERE TRUE"
-        if self.run is not None:
-            sqlFrom += " AND run={}".format(self.run)
-        if self.pre_brief is not None:
-            sqlFrom += " AND pre_brief SIMILAR TO '%({})%'".format(self.pre_brief)
+        sqlForm1 = None
+        if len(self.shotList) > 0:
+            sqlForm1 = "SELECT shot from shots WHERE shot IN ({})".format(", ".join(map(str, self.shotList)))
         
-        return QueryInput(sqlForm=sqlFrom)
+        sqlForm2 = None
+        if self.run != -1 or self.pre_brief or self.post_brief or self.pre_keywords or self.post_keywords:
+            sqlForm2 = "SELECT shot from shots WHERE TRUE"
+            if self.run != -1:
+                sqlForm2 += " AND run={}".format(self.run)
+            if self.pre_brief:
+                sqlForm2 += " AND pre_brief SIMILAR TO '%({})%'".format(self.pre_brief)
+            if self.post_brief:
+                sqlForm2 += " AND post_brief SIMILAR TO '%({})%'".format(self.post_brief)
+            if self.pre_keywords:
+                sqlForm2 += " AND post_keywords SIMILAR TO '%({})%'".format(self.pre_keywords)
+            if self.post_keywords:
+                sqlForm2 += " AND post_keywords SIMILAR TO '%({})%'".format(self.post_keywords)
+
+        sqlForm = None
+        if sqlForm1 and sqlForm2:
+            sqlForm = sqlForm1 + " UNION " + sqlForm2
+        elif sqlForm1:
+            sqlForm = sqlForm1
+        else:
+            sqlForm = sqlForm2
+        
+        return QueryInput(sqlForm=sqlForm)
         
 class QueryExecutor:
     @staticmethod
-    def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None) -> dict:
+    def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None, cache: bool = True) -> dict:
         shotList = queryInput.getShotList()
+        if (shotList is None) or (len(shotList) == 0):
+            return {}
+            
+        if sparkContext is None:
+            results = None
+            return results 
+
+        # Spark
         shotsRDD = sparkContext.parallelize(shotList, numSlices=2)
-        resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, True)))
+        resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, cache)))
         results = resultsRDD.collectAsMap()
 
         return results 
