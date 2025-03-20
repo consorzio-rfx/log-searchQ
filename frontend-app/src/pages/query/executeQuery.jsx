@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardContent, CircularProgress, Divider, FormLabel, TextField, Typography } from "@mui/material";
 import Header from "../../components/Header";
 import { useTheme } from "@emotion/react";
 import { tokens } from "../../theme";
@@ -18,13 +18,15 @@ const ExecuteQuery = ({ Query }) => {
 
   // For TextField input
   const queryNameRef = useRef(null);
-  const searchedShotsRef = useRef(null);
+  const searchedShotsRef = useRef({});
 
   // For showing details
   const [selectedQuery, setSelectedQuery] = useState(null)
   const [searchedShots, setSearchedShots] = useState(null)
 
   const [loading, setLoading] = useState(false)
+
+  const [queryResults, setQueryResults] = useState(null)
 
   const onQueryNameChange = (event) => {
     const { name, value } = event.target;
@@ -118,9 +120,9 @@ const ExecuteQuery = ({ Query }) => {
     )
   }
 
-  const onShotsChange = (event) => {
+  const onSearchedShotsChange = (event) => {
     const { name, value } = event.target;
-    searchedShotsRef.current = value;
+    searchedShotsRef.current[name] = value;
   }
 
   const onShowShots = () => {
@@ -137,7 +139,7 @@ const ExecuteQuery = ({ Query }) => {
   }
 
   const onClearShowShots = () => {
-    searchedShotsRef.current = null;
+    searchedShotsRef.current = {};
     setSearchedShots(null)
   }
 
@@ -241,13 +243,15 @@ const ExecuteQuery = ({ Query }) => {
     const currentQueryName = queryNameRef.current;
     const currentSearchedShots = searchedShotsRef.current;
 
-    if (currentQueryName === null || currentSearchedShots === null) {
+    console.log(currentSearchedShots)
+
+    if (currentQueryName === null || Object.keys(currentSearchedShots).length === 0) {
       return;
     }
 
     setLoading(true);
     executeQueryService.execute(currentQueryName, currentSearchedShots).then((res) => {
-      //
+      setQueryResults(res.data)
     }).finally(() => {
       setLoading(false);
     })
@@ -307,8 +311,8 @@ const ExecuteQuery = ({ Query }) => {
           multiline
           slotProps={{ inputLabel: {shrink: true} }}
           placeholder="e.g. 39390, 39391"
-          defaultValue={searchedShotsRef.current}
-          onChange={onShotsChange}
+          defaultValue={searchedShotsRef.current.shots}
+          onChange={onSearchedShotsChange}
         />
 
         <Button 
@@ -328,6 +332,55 @@ const ExecuteQuery = ({ Query }) => {
       </Box> 
 
       <Divider sx={{ my: 2 }} />
+
+      <Box display="flex" justifyContent="space-between">
+        <TextField
+          id="run"
+          label="run"
+          name="run"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          placeholder="e.g. 2394"
+          defaultValue={searchedShotsRef.current.run}
+          onChange={onSearchedShotsChange}
+          />
+        <TextField
+          id="pre_brief"
+          label="pre_brief"
+          name="pre_brief"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={searchedShotsRef.current.pre_brief}
+          onChange={onSearchedShotsChange}
+        />
+        <TextField
+          id="post_brief"
+          label="post_brief"
+          name="post_brief"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={searchedShotsRef.current.post_brief}
+          onChange={onSearchedShotsChange}
+        />
+        <TextField
+          id="pre_keywords"
+          label="pre_keywords"
+          name="pre_keywords"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={searchedShotsRef.current.pre_keywords}
+          onChange={onSearchedShotsChange}
+        />
+        <TextField
+          id="post_keywords"
+          label="post_keywords"
+          name="post_keywords"
+          multiline
+          slotProps={{ inputLabel: {shrink: true} }}
+          defaultValue={searchedShotsRef.current.post_keywords}
+          onChange={onSearchedShotsChange}
+        />
+      </Box>
 
       <Box>
         {searchedShots && <ShotsComponent searchedShots={searchedShots} />}
@@ -407,7 +460,17 @@ const ExecuteQuery = ({ Query }) => {
         </Box>
 
         <Box display="flex" justifyContent="center">
-          {loading === true ? <CircularProgress color="secondary"/> : <DoneIcon color="secondary"/> }
+          {loading === true ? 
+          <Box sx={{ marginBottom: 2 }}>
+            <CircularProgress color="secondary"/> 
+          </Box>
+          : 
+          <Card variant="outlined" sx={{ marginBottom: 2 }}>
+            <CardContent>
+              {JSON.stringify(queryResults)}
+            </CardContent>
+          </Card>
+        }
         </Box>
       </Box>
 

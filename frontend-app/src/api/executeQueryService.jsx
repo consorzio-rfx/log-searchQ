@@ -6,16 +6,34 @@ const selectQuery = (queryName) => {
     return axios.get(API_URL + "/selectQuery", { params: { queryName: queryName } })
 }
 
-const searchShots = (shots) => {
-    const shotList = shots.split(',').map(num => parseInt(num.trim()));
-    return axios.get(API_URL + "/searchShots", { params: { shots: shotList } })
+const getValidParams = (searchedShots) => {
+    const shotList = searchedShots["shots"]
+    ? searchedShots["shots"].split(',').map(num => parseInt(num.trim()))
+    : undefined;
+
+    const params = {
+        shots: shotList,
+        run: searchedShots["run"],
+        pre_brief: searchedShots["pre_brief"],
+        post_brief: searchedShots["post_brief"],
+        pre_keywords: searchedShots["pre_keywords"],
+        post_keywords: searchedShots["post_keywords"]
+    };
+
+    // Remove keys with `null`, `undefined`, or empty strings
+    const validParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    );
+
+    return validParams
 }
 
-const execute = (queryName, shots) => {
-    console.log(queryName)
-    console.log(shots)
-    const shotList = shots.split(',').map(num => parseInt(num.trim()));
-    return axios.post(API_URL + "/execute", null, { params: { queryName: queryName, shots: shotList } })
+const searchShots = (searchedShots) => {
+    return axios.get(API_URL + "/searchShots", { params: getValidParams(searchedShots) });
+}
+
+const execute = (queryName, searchedShots) => {
+    return axios.post(API_URL + "/execute", null, { params: { js: 1, queryName: queryName, ...getValidParams(searchedShots) } })
 }
 
 
