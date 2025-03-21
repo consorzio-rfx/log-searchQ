@@ -11,13 +11,23 @@ class QueryService:
         return Query.query.filter_by(queryName=queryName).first()
     
     @staticmethod
+    def getDependencyQueries(queryName):
+        query = QueryService.getQueryByName(queryName)
+        dependencyQueries = []
+        for dependency in query.dependencies:
+            dependencyQuery = QueryService.getQueryByName(dependency)
+            if dependencyQuery: 
+                dependencyQueries.append(dependencyQuery)
+        return dependencyQueries
+    
+    @staticmethod
     def getQueryById(id):
         return Query.query.get_or_404(id)
     
     @staticmethod
-    def createQuery(queryName, queryDescription, executionUnitFunction):
+    def createQuery(queryName, dependencies, queryDescription, executionUnitFunction):
         try:
-            query = Query(queryName=queryName, queryDescription=queryDescription, executionUnitFunction=executionUnitFunction)
+            query = Query(queryName=queryName, dependencies=dependencies, queryDescription=queryDescription, executionUnitFunction=executionUnitFunction)
 
             db.session.add(query)
 
@@ -30,9 +40,10 @@ class QueryService:
             raise ValueError(f"An unexpected error occurred: {str(e)}")
         
     @staticmethod
-    def updateQuery(id, newQueryName, newQueryDescription, newExecutionUnitFunction):
+    def updateQuery(id, newQueryName, newDependencies, newQueryDescription, newExecutionUnitFunction):
         query = Query.query.get_or_404(id)
         query.queryName = newQueryName
+        query.dependencies = newDependencies
         query.queryDescription = newQueryDescription
         query.executionUnitFunction = newExecutionUnitFunction
         db.session.commit()

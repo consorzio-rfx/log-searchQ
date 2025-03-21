@@ -2,14 +2,14 @@ from app import create_app
 from app.services.query_service import QueryService
 from app.utils.query_executor import QueryInput, QueryInputBuilder, QueryExecutor
 from pyspark.sql import SparkSession
+from app.config import Config
 
 if __name__ == '__main__':
     # Initialize SparkSession
-    spark = SparkSession.builder.appName("test").master("spark://localhost:7077").getOrCreate()
-    sparkContext = spark.sparkContext
-    sparkContext.addPyFile("app.zip")
-
-    app = create_app(spark)
+    # spark = SparkSession.builder.appName("test").master("spark://localhost:7077").getOrCreate()
+    # sparkContext = spark.sparkContext
+    # sparkContext.addPyFile("app.zip")
+    app = create_app(None, Config)
 
     executionUnitFunction1 = r"""
 def testFunc1(shot: int) -> dict:
@@ -48,10 +48,10 @@ def testFunc2(shot: int) -> dict:
 """
 
     with app.app_context():
-        # QueryService.createQuery("testQuery1", "testQueryDescription1", executionUnitFunction1)
-        # QueryService.createQuery("testQuery2", "testQueryDescription2", executionUnitFunction2)
-        # QueryService.createQuery("testQuery3", "testQueryDescription3", executionUnitFunction3)
+        # QueryService.createQuery("testQuery1", [], "testQueryDescription1", executionUnitFunction1)
+        # QueryService.createQuery("testQuery2", ["testQuery1"], "testQueryDescription2", executionUnitFunction2)
+        # QueryService.createQuery("testQuery3", ["testQuery1", "testQuery2"], "testQueryDescription3", executionUnitFunction3)
 
-        query = QueryService.getQueryByName("testQuery3")
-        queryInput = QueryInput(shotList=[39390, 39391])
-        print(QueryExecutor.execute(sparkContext=sparkContext, query=query, queryInput=queryInput))
+        dependencyQueries = QueryService.getDependencyQueries("testQuery3")
+        print(dependencyQueries)
+

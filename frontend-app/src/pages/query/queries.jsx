@@ -160,6 +160,16 @@ const Query = () => {
                     defaultValue={selectedQuery.queryName}
                     onChange={onTextFieldChange}
                 />
+                <TextField
+                    sx={{ width: "50ch" }}
+                    id="dependencies"
+                    label="dependencies"
+                    name="dependencies"
+                    multiline
+                    slotProps={{ inputLabel: {shrink: true} }} 
+                    defaultValue={selectedQuery.dependencies}
+                    onChange={onTextFieldChange}
+                />
             </Box>
 
             <Box sx={{ display: 'flex' }}>
@@ -267,6 +277,11 @@ const Query = () => {
         {
           field: "queryName",
           headerName: "queryName",
+          flex: 1,
+        },
+        {
+          field: "dependencies",
+          headerName: "dependencies",
           flex: 1,
         },
         {

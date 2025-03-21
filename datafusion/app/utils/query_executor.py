@@ -2,7 +2,6 @@ from pyspark.sql import SparkSession
 from pyspark.context import SparkContext
 from ..services.query_service import QueryService
 from ..models.query_model import Query
-from .execution_unit_cache import ExecutionUnitCache
 from ..database.db import db
 from sqlalchemy import text
 
@@ -74,15 +73,22 @@ class QueryInputBuilder:
 class QueryExecutor:
     @staticmethod
     def execute(sparkContext: SparkContext = None, query: Query = None, queryInput: QueryInput = None, cache: bool = True) -> dict:
+        print("EXECUTE QUERY", query.queryName)
+        
         shotList = queryInput.getShotList()
         if (shotList is None) or (len(shotList) == 0):
             return {}
             
         if sparkContext is None:
             results = None
-            return results 
+            return results
 
-        # Spark
+        # Execute dependencies
+        dependencyQueries = QueryService.getDependencyQueries(queryName=query.queryName)
+        for dependencyQuery in dependencyQueries:
+            QueryExecutor.execute(sparkContext=sparkContext, query=dependencyQuery, queryInput=queryInput, cache=cache)
+
+        # Execute query
         shotsRDD = sparkContext.parallelize(shotList, numSlices=2)
         resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, cache)))
         results = resultsRDD.collectAsMap()
@@ -93,6 +99,7 @@ class UnitFunctionExecutor:
     @staticmethod
     def executePerShotWithCache(query: Query, shot: int, cache = False):
         from app import create_app
+        from app.utils.execution_unit_cache import ExecutionUnitCache
         from app.config import ConfigSpark
 
         app = create_app(None, ConfigSpark)
@@ -113,12 +120,9 @@ class UnitFunctionExecutor:
 
     @staticmethod
     def executePerShot(query: Query, shot: int):
-        import time
         import re
 
         print(query.executionUnitFunction, shot)
-        # Mock
-        time.sleep(10)
 
         executionName = re.search(r'\bdef (\w+)\s*\(', query.executionUnitFunction).group(1)
         localContext = {}
@@ -135,7 +139,7 @@ class UnitFunctionExecutor:
         print(query.executionUnitFunction, shot)
         
         data = {"executionUnitFunction": query.executionUnitFunction, "shot": shot} 
-        response = requests.post("http://localhost:5002/execute", json=data)
+        response = requests.post("http://host.docker.internal:5002/execute", json=data)
         result = pickle.loads(response.content)
         return result
 

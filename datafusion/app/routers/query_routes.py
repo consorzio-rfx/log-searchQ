@@ -21,10 +21,11 @@ def createQuery():
         data = request.get_json()
 
         queryName = data["queryName"]
+        dependencies = [item.strip() for item in data["dependencies"].split(',')] 
         queryDescription = data["queryDescription"]
         executionUnitFunction = data["executionUnitFunction"]
 
-        query = QueryService.createQuery(queryName, queryDescription, executionUnitFunction)
+        query = QueryService.createQuery(queryName, dependencies, queryDescription, executionUnitFunction)
 
         return jsonify(query.to_dict()), 201
     
@@ -38,10 +39,11 @@ def updateQuery(id):
     data = request.get_json()
 
     queryName = data["queryName"]
+    dependencies = [item.strip() for item in data["dependencies"].split(',')] 
     queryDescription = data["queryDescription"]
     executionUnitFunction = data["executionUnitFunction"]
 
-    query = QueryService.updateQuery(id, queryName, queryDescription, executionUnitFunction)
+    query = QueryService.updateQuery(id, queryName, dependencies, queryDescription, executionUnitFunction)
     return jsonify(query.to_dict())
 
 @query_blueprint.route('/queries/<int:id>', methods=['DELETE'])
