@@ -43,8 +43,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=cuong.ntt@domain.com
-      - PGADMIN_DEFAULT_PASSWORD=cuong.ntt
+      - PGADMIN_DEFAULT_EMAIL=helloworld@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=helloworld
     ports:
       - '2345:80'
 
