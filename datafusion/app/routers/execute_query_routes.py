@@ -6,7 +6,7 @@ from sqlalchemy import text
 from ..utils.query_executor import QueryExecutor, QueryInput, QueryInputBuilder
 import pickle
 
-def createExecuteQueryBlueprint(sparkBuilder):
+def createExecuteQueryBlueprint(sparkContext):
     execute_query_blueprint = Blueprint('execute_query', __name__)
 
     @execute_query_blueprint.route('/api/executeQuery/selectQuery', methods=['GET'])
@@ -39,7 +39,6 @@ def createExecuteQueryBlueprint(sparkBuilder):
 
         queryInput = getQueryInput(request) 
 
-        sparkContext = sparkBuilder.getOrCreate().sparkContext
         results = QueryExecutor.execute(sparkContext=sparkContext, query=query, queryInput=queryInput)
         print(results)
 

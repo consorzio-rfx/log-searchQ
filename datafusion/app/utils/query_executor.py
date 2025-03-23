@@ -93,6 +93,7 @@ class QueryExecutor:
         resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, cache)))
         results = resultsRDD.collectAsMap()
 
+        print("FINISH QUERY", query.queryName)
         return results 
     
 class UnitFunctionExecutor:
