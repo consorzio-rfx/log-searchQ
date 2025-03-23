@@ -62,6 +62,7 @@ const Query = () => {
         const emptyQuery = {
             id: null,
             queryName: null,
+            dependencies: "",
             queryDescription: "",
             executionUnitFunction: "",
         };

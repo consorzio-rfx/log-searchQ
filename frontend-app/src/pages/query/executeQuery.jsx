@@ -5,7 +5,7 @@ import { tokens } from "../../theme";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import FunctionsIcon from '@mui/icons-material/Functions';
-import { useRef, useState } from "react";
+import { use, useRef, useState } from "react";
 import executeQueryService from "../../api/executeQueryService";
 import { Editor } from "@monaco-editor/react";
 import { DataGrid } from "@mui/x-data-grid";
@@ -27,24 +27,6 @@ const ExecuteQuery = ({ Query }) => {
   const [loading, setLoading] = useState(false)
 
   const [queryResults, setQueryResults] = useState(null)
-
-  const onQueryNameChange = (event) => {
-    const { name, value } = event.target;
-    queryNameRef.current = value;
-  }
-
-  const onShowQuery = () => {
-    executeQueryService.selectQuery(queryNameRef.current).then((res) => {
-      setSelectedQuery(res.data)
-    }).catch((err) => {
-      //
-    })
-  }
-
-  const onClearShowQuery = () => {
-    queryNameRef.current = null;
-    setSelectedQuery(null)
-  }
 
   const QueryComponent = ( {selectedQuery} ) => {
     return (
@@ -73,6 +55,15 @@ const ExecuteQuery = ({ Query }) => {
                     multiline
                     slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
                     defaultValue={selectedQuery.queryName}
+                />
+                <TextField
+                    sx={{ width: "50ch" }}
+                    id="dependencies"
+                    label="dependencies"
+                    name="dependencies"
+                    multiline
+                    slotProps={{ inputLabel: {shrink: true}, input: { readOnly: true} }} 
+                    defaultValue={selectedQuery.dependencies}
                 />
             </Box>
 
@@ -118,29 +109,6 @@ const ExecuteQuery = ({ Query }) => {
         </Box>
 
     )
-  }
-
-  const onSearchedShotsChange = (event) => {
-    const { name, value } = event.target;
-    searchedShotsRef.current[name] = value;
-  }
-
-  const onShowShots = () => {
-    executeQueryService.searchShots(searchedShotsRef.current).then((res) => {
-      const shotsWithIds = res.data.map((row, index) => ({
-        id : index + 1,
-        ...row,
-      }));
-
-      setSearchedShots(shotsWithIds)
-    }).catch((err) => {
-      //
-    })
-  }
-
-  const onClearShowShots = () => {
-    searchedShotsRef.current = {};
-    setSearchedShots(null)
   }
 
   const ShotsComponent = ( {searchedShots} ) => {
@@ -258,9 +226,28 @@ const ExecuteQuery = ({ Query }) => {
   }
   
   const SelectQueryDetails = () => {
+    const onQueryNameChange = (event) => {
+      const { name, value } = event.target;
+      queryNameRef.current = value;
+    }
+  
+    const onShowQuery = () => {
+      executeQueryService.selectQuery(queryNameRef.current).then((res) => {
+        setSelectedQuery(res.data)
+      }).catch((err) => {
+        //
+      })
+    }
+  
+    const onClearShowQuery = () => {
+      queryNameRef.current = null;
+      setSelectedQuery(null)
+    }
+
     return (        
     <Box>
       <Divider sx={{ my: 2 }} />
+      
       <Box display="flex" justifyContent="space-between">
         <TextField
           sx={{ width: "50ch" }}
@@ -299,6 +286,29 @@ const ExecuteQuery = ({ Query }) => {
   }
 
   const SearchShotsDetails = () => {
+    const onSearchedShotsChange = (event) => {
+      const { name, value } = event.target;
+      searchedShotsRef.current[name] = value;
+    }
+  
+    const onShowShots = () => {
+      executeQueryService.searchShots(searchedShotsRef.current).then((res) => {
+        const shotsWithIds = res.data.map((row, index) => ({
+          id : index + 1,
+          ...row,
+        }));
+  
+        setSearchedShots(shotsWithIds)
+      }).catch((err) => {
+        //
+      })
+    }
+  
+    const onClearShowShots = () => {
+      searchedShotsRef.current = {};
+      setSearchedShots(null)
+    }
+
     return (
     <Box>
       <Divider sx={{ my: 2 }} />
