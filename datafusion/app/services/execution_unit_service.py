@@ -30,5 +30,12 @@ class ExecutionUnitService:
 
             raise ValueError(f"An unexpected error occurred: {str(e)}")
     
+    @staticmethod
+    def deleteExecutionUnit(id):
+        executionUnit = ExecutionUnit.query.get_or_404(id)
+        db.session.delete(executionUnit)
+        db.session.commit()
+        return executionUnit
+
 
 

@@ -1,22 +1,61 @@
 import { useTheme } from "@emotion/react";
 import executionUnitsService from "../../api/executionUnitsService";
 import { tokens } from "../../theme";
-import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Box, Button } from "@mui/material";
 import Header from "../../components/Header";
 import { DataGrid } from "@mui/x-data-grid";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ExecutionUnits = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     const [rows, setRows] = useState([]);
+    const [selectedExecutionUnit, setSelectedExecutionUnit] = useState(null)
+
+    const handleRowClick = (params) => {
+      setSelectedExecutionUnit(params.row);
+    };  
 
     useEffect(() => {
         executionUnitsService.getAllExecutionUnits().then((res) => {
             setRows(res.data);
         })
     }, []);
+
+    const onDeleteExecutionUnit = () => {
+      executionUnitsService 
+        .deleteExecutionUnit(selectedExecutionUnit)
+        .then((res) => {
+          const dbRow = res.data;
+          setRows(rows.filter((r) => r.id !== dbRow.id));
+          setSelectedExecutionUnit(null);
+        })
+        .catch((err) => {
+          setRows(rows);
+        });
+    }
+
+    function CRUDBoxExecutionUnit() {
+      const ref = useRef(null);
+
+      useEffect(() => {
+        ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, []);
+      
+      return (
+      <Box ref={ref}>
+        <Box display="flex" justifyContent="center" p={2}>
+          <Button 
+            sx={{ backgroundColor: colors.redAccent[600], color: 'white', '&:hover': { backgroundColor: colors.redAccent[400] } }} 
+            size="small" variant="standard" startIcon={<DeleteIcon />} onClick={onDeleteExecutionUnit}
+          >
+            DELETE EXECUTION UNIT 
+          </Button>
+        </Box>
+      </Box>)
+    }
 
     const columns = [
         {
@@ -65,8 +104,11 @@ const ExecutionUnits = () => {
             <DataGrid
               rows={rows}
               columns={columns}
+              onRowClick={handleRowClick}
             />
           </Box>
+
+          {selectedExecutionUnit !== null && <CRUDBoxExecutionUnit/>}
 
         </Box>
     );

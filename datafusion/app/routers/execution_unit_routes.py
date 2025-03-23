@@ -8,3 +8,8 @@ execution_unit_blueprint = Blueprint('execution_unit', __name__)
 def getAllExecutionUnits():
     executionUnits = ExecutionUnitService.getAllExecutionUnits()
     return jsonify([executionUnit.to_dict() for executionUnit in executionUnits])
+
+@execution_unit_blueprint.route('/executionUnits/<int:id>', methods=['DELETE'])
+def deleteExecutionUnit(id):
+    executionUnit = ExecutionUnitService.deleteExecutionUnit(id)
+    return jsonify(executionUnit.to_dict())
