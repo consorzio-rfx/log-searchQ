@@ -1,5 +1,6 @@
 from ..models.execution_unit_model import ExecutionUnit 
 from ..database.db import db
+from sqlalchemy.exc import IntegrityError
 
 class ExecutionUnitService:
     @staticmethod
@@ -20,9 +21,13 @@ class ExecutionUnitService:
             db.session.commit()
 
             return executionUnit 
-
+        
         except Exception as e:
             db.session.rollback()
+            if 'duplicate key value violates unique constraint' in str(e.orig):
+                print("duplicate key value violates unique constraint")
+                return
+
             raise ValueError(f"An unexpected error occurred: {str(e)}")
     
 
