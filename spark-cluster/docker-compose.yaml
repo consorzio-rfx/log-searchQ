@@ -1,6 +1,7 @@
 services:
   spark-master:
     build: .
+    image: consorziorfx/logq-spark:1.0
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -8,12 +9,15 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
       - SPARK_USER=spark
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python
+      - PYSPARK_DRIVER_PYTHON=/opt/bitnami/python/bin/python
     ports:
       - '8080:8080'
       - '7077:7077'
 
   spark-worker:
     build: .
+    image: consorziorfx/logq-spark:1.0
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
@@ -24,6 +28,8 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
       - SPARK_USER=spark
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python
+      - PYSPARK_DRIVER_PYTHON=/opt/bitnami/python/bin/python
     depends_on:
       - spark-master
 
