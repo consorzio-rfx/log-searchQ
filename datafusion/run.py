@@ -2,8 +2,12 @@ from app import create_app
 from pyspark.sql import SparkSession
 from app.config import Config
 import subprocess
+import os
 
 if __name__ == '__main__':
+    os.environ['PYSPARK_PYTHON'] = '/opt/bitnami/python/bin/python'
+    os.environ['PYSPARK_DRIVER_PYTHON'] = '/opt/bitnami/python/bin/python'
+
     # Send to Spark Worker
     subprocess.run(["zip", "-r", "app.zip", "app"], check=True, stdout=subprocess.DEVNULL)
 

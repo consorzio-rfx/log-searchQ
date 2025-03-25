@@ -108,7 +108,6 @@ class UnitFunctionExecutor:
         result = None
         with app.app_context():
             if cache and ExecutionUnitCache.hasCached(query.queryName, shot):
-                print("CACHE HITTTTTTTTT")
                 result = ExecutionUnitCache.getCachedResult(query.queryName, shot)
             else:
                 result = UnitFunctionExecutor.executePerShot(query, shot)
@@ -117,7 +116,6 @@ class UnitFunctionExecutor:
                 ExecutionUnitCache.cache(query.queryName, shot, result)
 
         return result
-
 
     @staticmethod
     def executePerShot(query: Query, shot: int):
@@ -130,17 +128,3 @@ class UnitFunctionExecutor:
         exec(query.executionUnitFunction, {}, localContext)
         result = localContext[executionName](shot)
         return result
-
-    @staticmethod
-    # Mock with MDSplus operations
-    def executePerShotRemotely(query: Query, shot: int):
-        import pickle
-        import requests
-
-        print(query.executionUnitFunction, shot)
-        
-        data = {"executionUnitFunction": query.executionUnitFunction, "shot": shot} 
-        response = requests.post("http://host.docker.internal:5002/execute", json=data)
-        result = pickle.loads(response.content)
-        return result
-

@@ -106,6 +106,9 @@ RUN pip install numpy --upgrade &&\
 # install RFX evironment
 COPY envsyms /usr/local/mdsplus/local/envsyms
 
+# source mdsplus setup for each task 
+COPY --chown=1001:1001 spark-env.sh /opt/bitnami/spark/conf/spark-env.sh
+
 # change run script
 COPY --chown=1001:1001 --chmod=755 spark-run.sh /spark-run.sh
 CMD [ "/spark-run.sh" ]
@@ -124,6 +127,7 @@ USER 1001
 
 # Optional: custom logging
 COPY log4j2.properties /opt/bitnami/spark/conf/log4j2.properties
+
 COPY requirements.txt /requirements.txt
 
 RUN pip install -r /requirements.txt
