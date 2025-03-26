@@ -1,5 +1,5 @@
 # Build Golang binary
-FROM golang:1.20.2 AS build-golang
+FROM golang:1.23.1 AS build-golang
 
 WORKDIR /home/andrea/Nextcloud/YFinGames/devel/andrea/rewsrv-gin
 
