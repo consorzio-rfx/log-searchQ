@@ -1,6 +1,7 @@
 import axios from "axios";
+import API_ENDPOINTS from "./config";
 
-const API_URL = 'http://localhost:5001/queries';
+const API_URL = API_ENDPOINTS.datafusionEndpoint + '/queries';
 
 const getAllQueries = () => {
     return axios.get(API_URL);

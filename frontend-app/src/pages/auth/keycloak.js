@@ -1,7 +1,8 @@
 import Keycloak from 'keycloak-js';
+import API_ENDPOINTS from '../../api/config';
 
 const keycloak = new Keycloak({
-    url: 'http://localhost:8080/',
+    url: API_ENDPOINTS.logbookBackendEndpoint,
     realm: 'myrealm',
     clientId: 'frontend-client',
 });
