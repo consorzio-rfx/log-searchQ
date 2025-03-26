@@ -11,10 +11,13 @@ if __name__ == '__main__':
     # Send to Spark Worker
     subprocess.run(["zip", "-r", "app.zip", "app"], check=True, stdout=subprocess.DEVNULL)
 
-    # Initialize SparkSession
+    # Initialize SparkSession Locally
     # spark = SparkSession.builder.appName("Query").master("local[*]").getOrCreate()
     # spark = SparkSession.builder.appName("Query").master("local-cluster[1,1,1024]").config('spark.submit.pyFiles', 'app.zip').getOrCreate() # 1 executor, 2 cores, 1024MB mem
-    spark = SparkSession.builder.appName("Query").master("spark://localhost:7077").config('spark.submit.pyFiles', 'app.zip').getOrCreate()
+    
+    # Initialize SparkSession
+    SPARK_MASTER_URL = os.getenv('SPARK_MASTER_URL', '"spark://localhost:7077')  
+    spark = SparkSession.builder.appName("Query").master(SPARK_MASTER_URL).config('spark.submit.pyFiles', 'app.zip').getOrCreate()
     
     app = create_app(spark.sparkContext, Config)
     app.run(host='localhost', port=5001, debug=False)

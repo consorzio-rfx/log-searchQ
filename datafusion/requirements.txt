@@ -4,3 +4,4 @@ psycopg2-binary==2.9.10
 marshmallow==3.26.1
 numpy==1.26.4
 requests==2.32.3
+pyspark==3.5.3
