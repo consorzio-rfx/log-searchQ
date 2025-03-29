@@ -12,6 +12,7 @@
     "@toolpad/core": "^0.12.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "@uiw/react-json-view": "^2.0.0-alpha.30",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "katex": "^0.16.21",

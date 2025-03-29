@@ -11,6 +11,8 @@ import { Editor } from "@monaco-editor/react";
 import { DataGrid } from "@mui/x-data-grid";
 import DoneIcon from '@mui/icons-material/Done';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import JsonView from '@uiw/react-json-view';
+
 
 const ExecuteQuery = ({ Query }) => {
   const theme = useTheme();
@@ -26,7 +28,7 @@ const ExecuteQuery = ({ Query }) => {
 
   const [loading, setLoading] = useState(false)
 
-  const [queryResults, setQueryResults] = useState(null)
+  const [queryResults, setQueryResults] = useState({})
 
   const QueryComponent = ( {selectedQuery} ) => {
     return (
@@ -477,7 +479,7 @@ const ExecuteQuery = ({ Query }) => {
           : 
           <Card variant="outlined" sx={{ marginBottom: 2 }}>
             <CardContent>
-              {JSON.stringify(queryResults)}
+              <JsonView value={queryResults}/>
             </CardContent>
           </Card>
         }
