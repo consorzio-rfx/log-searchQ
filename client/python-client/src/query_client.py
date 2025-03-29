@@ -3,6 +3,17 @@ import pickle
 
 class QueryClient:
     @staticmethod
+    def createQuery(url: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction: str):
+        data = {
+            "queryName": queryName,
+            "dependencies": ", ".join(dependencies),
+            "queryDescription": queryDescription,
+            "executionUnitFunction": executionUnitFunction
+        }
+        response = requests.post(url, json=data)
+        return response 
+
+    @staticmethod
     def execute(url: str, 
                 queryName: str, 
                 shotList: list = None, 
