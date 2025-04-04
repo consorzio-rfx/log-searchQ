@@ -1,7 +1,6 @@
 package Controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,7 +22,7 @@ func GetRuns(c *gin.Context) {
 	err2 := Models.GetRuns(&runs, page, pageSize)
 
 	if err1 != nil || err2 != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		// Respond with paginated runs
 		c.JSON(http.StatusOK, gin.H{
@@ -39,7 +38,7 @@ func GetAllRuns(c *gin.Context) {
 
 	err := Models.GetAllRuns(&runs)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, runs)
 	}
@@ -52,10 +51,9 @@ func CreateRun(c *gin.Context) {
 
 	err := Models.CreateRun(&run)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
-		c.JSON(http.StatusOK, run)
+		c.JSON(http.StatusCreated, run)
 	}
 }
 
@@ -70,7 +68,7 @@ func UpdateRun(c *gin.Context) {
 
 	err := Models.UpdateRun(&run)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, run)
 	}
@@ -85,7 +83,7 @@ func DeleteRun(c *gin.Context) {
 
 	err := Models.DeleteRun(&run)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, run)
 	}

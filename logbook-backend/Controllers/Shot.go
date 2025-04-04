@@ -1,7 +1,6 @@
 package Controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -24,7 +23,7 @@ func GetShots(c *gin.Context) {
 	err2 := Models.GetShots(&shots, runId, page, pageSize)
 
 	if err1 != nil || err2 != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		// Respond with paginated shots
 		c.JSON(http.StatusOK, gin.H{
@@ -53,8 +52,7 @@ func CreateShot(c *gin.Context) {
 
 	err := Models.CreateShot(&shot)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, shot)
 	}
@@ -69,11 +67,9 @@ func UpdateShot(c *gin.Context) {
 	id, _ := strconv.ParseUint(idStr, 10, 64)
 	shot.Shot = uint(id)
 
-	fmt.Printf("AAAAA %+v\n", shot)
-
 	err := Models.UpdateShot(&shot)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, shot)
 	}
@@ -88,7 +84,7 @@ func DeleteShot(c *gin.Context) {
 
 	err := Models.DeleteShot(&shot)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusInternalServerError)
 	} else {
 		c.JSON(http.StatusOK, shot)
 	}

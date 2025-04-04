@@ -3,14 +3,16 @@ import API_ENDPOINTS from "./config";
 
 const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/logbook/shots';
 
-const getShots = (Run, page, pageSize) => {
+const getShots = (Run, page, pageSize, keycloak) => {
     if (Run !== null && Run !== undefined) {
         return axios.get(API_URL, {
             params: {
                 Run: Run,
                 page: page,
                 pageSize: pageSize,
-            }
+            },
+
+            headers: { Authorization: `Bearer ${keycloak.token}` },
         });
     }
 
@@ -18,7 +20,9 @@ const getShots = (Run, page, pageSize) => {
         params: {
             page: page,
             pageSize: pageSize,
-        }
+        },
+        
+        headers: { Authorization: `Bearer ${keycloak.token}` },
     });
 }
 

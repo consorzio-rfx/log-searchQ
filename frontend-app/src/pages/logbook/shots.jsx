@@ -11,10 +11,13 @@ import CustomPagination from "../../components/CustomPagination";
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useKeycloakAuthContext } from "../auth/KeycloakAuthContext";
 
 const Shots = ({ Run }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const { authenticated, userInfo, keycloak } = useKeycloakAuthContext();
   
   const [rows, setRows] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
@@ -39,7 +42,7 @@ const Shots = ({ Run }) => {
 
   const fetchData = (paginationModel) => {
     setLoading(true);
-    shotsService.getShots(Run, paginationModel.page + 1, paginationModel.pageSize).then((res) => {
+    shotsService.getShots(Run, paginationModel.page + 1, paginationModel.pageSize, keycloak).then((res) => {
       const shotsWithIds = res.data.shots.map((row, index) => ({
         id : index + 1 + (paginationModel.page * paginationModel.pageSize),
         ...row,

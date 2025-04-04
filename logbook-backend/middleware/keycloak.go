@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/Nerzal/gocloak/v13"
@@ -10,12 +11,20 @@ import (
 )
 
 var (
-	keycloakURL  = "http://localhost:8080"
+	keycloakURL  = getKeycloakURL()
 	realm        = "myrealm"
 	clientID     = "backend-client"
-	clientSecret = "ruKA36WzJvzzYT7QnAmRO9smvZbAtX6h"
+	clientSecret = "helloworld"
 	client       = gocloak.NewClient(keycloakURL)
 )
+
+func getKeycloakURL() string {
+	keycloakURL := os.Getenv("KEYCLOAK_URL")
+	if keycloakURL == "" {
+		keycloakURL = "http://localhost:8082" // Default value if the env var is empty
+	}
+	return keycloakURL
+}
 
 func KeycloakAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
