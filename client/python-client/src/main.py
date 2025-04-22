@@ -9,21 +9,25 @@ if __name__ == "__main__":
     # print(data)
 
     executionUnitFunction = r"""
-def func(shot: int) -> dict:
+def maxCurrent(shot: int) -> dict:
     import MDSplus as mds
+    import numpy as np
 
     tree = mds.Tree('RFX', shot)
     node = tree.getNode('\RFX::TOP.RFX.DIAG.A.RESULTS.EMRA:IT')
     it_data = node.data()
-    it_time = node.dim_of().data()
+    max_it = np.max(it_data)
 
     result = {}
-    result["it_data"] = it_data
-    result["it_time"] = it_time
+    result["max_it"] = max_it
 
     tree.close()
 
     return result
 """
-    response = QueryClient.createQuery("http://localhost:5001/queries", "testQuery5", ["testQuery1", "testQuery2"], "##", executionUnitFunction)
-    print(response)
+    # response = QueryClient.createQuery("http://localhost:5001/queries", "computeMaxCurrent", [], "", executionUnitFunction)
+    # print(response)
+
+    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39390]) 
+    print(result)
+
