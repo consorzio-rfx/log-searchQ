@@ -1,66 +1,71 @@
 version: '3'
 
+include:
+  - ./spark-cluster/docker-compose.yaml
+
 networks:
-  rewsrv_network_compose:
+  log_searchq_network:
     driver: bridge
 
 services:
-  # rewsrv:
-  #   container_name: rewsrv
-  #   build: .
-  #   restart: unless-stopped
-  #   networks:
-  #     rewsrv_network_compose:
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - db
-  
-  keycloak:
-    # docker run -d --name keycloak-server -p 8082:8080 -v ./import/:/opt/keycloak/data/import/ 
-    #   -e KEYCLOAK_ADMIN=admin 
-    #   -e KEYCLOAK_ADMIN_PASSWORD=admin 
-    #   quay.io/keycloak/keycloak:latest start-dev --import-realm
+  keycloak-server:
     image: quay.io/keycloak/keycloak:latest
     volumes:
       - ./keycloak/import:/opt/keycloak/data/import/
     command: start-dev --import-realm
     restart: unless-stopped
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      DB_VENDOR: POSTGRES
-      DB_ADDR: db
-      DB_DATABASE: rewsrv
-      DB_PORT: 5432
-      DB_USER: rewsrv
-      DB_PASSWORD: rewsrv
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - "8082:8080"
     depends_on:
-      - db
+      - postgresql-server
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
 
-  frontend:
-    container_name: frontend
-    build: ./frontend
-    #restart: unless-stopped
+  frontend-app:
+    build: ./frontend-app
+    image: consorziorfx/frontend-app:1.0
+    restart: unless-stopped
+    environment:
+      - REACT_APP_KEYCLOAK_ENDPOINT=http://localhost:8082
+      - REACT_APP_LOGBOOK_BACKEND_ENDPOINT=http://localhost:8081
+      - REACT_APP_QUERY_ENGINE_ENDPOINT=http://localhost:5001
     ports:
-      - "8080:80"
+      - "3000:3000"
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
 
   logbook-backend:
-    container_name: backend
     build: ./logbook-backend
-    #restart: unless-stopped
+    image: consorziorfx/logbook-backend:1.0
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://helloworld:helloworld@postgresql-server:5432/logbookdb
+      - KEYCLOAK_URL=http://keycloak-server:8080
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
-      - db
+      - postgresql-server
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
+
+  query-engine:
+    build: ./query-engine
+    image: consorziorfx/query-engine:1.0
+    restart: unless-stopped
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - DATABASE_URL=postgresql://helloworld:helloworld@postgresql-server:5432/logbookdb
+    ports:
+      - "5001:5001"
+      - "4042:4042"
+    depends_on:
+      - postgresql-server
+      - spark-master
+    networks:
+      - log_searchq_network
 
   # nginx:
   #   image: nginx:latest
@@ -74,41 +79,30 @@ services:
   #     - frontend
   #     - logbook-backend
   #     - keycloak
-
   #   networks:
-  #     rewsrv_network_compose:
+  #     - log-searchq_network:
 
+  # postgresql-server:
+  #   image: postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=helloworld
+  #     - POSTGRES_PASSWORD=helloworld
+  #     - POSTGRES_DB=logbookdb
+  #   ports:
+  #     - '5432:5432'
+  #   volumes:
+  #     - ./data:/var/lib/postgresql/data
+  #     - ./logbookRFX.sql:/logbookRFX.sql
+  #   networks:
+  #     - log_searchq_network
 
-  db:
-    image: postgres
-    restart: unless-stopped
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      POSTGRES_USER: rewsrv
-      POSTGRES_PASSWORD: rewsrv
-      POSTGRES_DB: rewsrv
+      - PGADMIN_DEFAULT_EMAIL=helloworld@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=helloworld
     ports:
-      - "5432:5432"
+      - '2345:80'
     networks:
-      rewsrv_network_compose:
-
-  pgweb:
-    image: sosedoff/pgweb
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: "postgresql://rewsrv:rewsrv@db:5432/rewsrv?sslmode=disable"
-    ports:
-      - "8081:8081"
-    depends_on:
-      - db
-    networks:
-      rewsrv_network_compose:
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8082:8080
-    depends_on:
-      - db
-    networks:
-      rewsrv_network_compose:
+      - log_searchq_network

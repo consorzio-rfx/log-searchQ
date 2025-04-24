@@ -7,13 +7,30 @@ COPY . /app
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y \
-    zip
+    wget \
+    zip \
+    tar
 
-# Install Java 21
-RUN wget https://download.oracle.com/java/21/archive/jdk-21.0.2_linux-aarch64_bin.tar.gz && \
-    tar -xvzf jdk-21.0.2_linux-aarch64_bin.tar.gz -C /opt/ 
+# Define environment variable for architecture
+ARG TARGETARCH
+ENV ARCH=$TARGETARCH
 
-ENV JAVA_HOME=/opt/jdk-21.0.2
+# Set the Java version and download URL template
+ENV JAVA_VERSION=21.0.2
+ENV JAVA_BASE_URL=https://download.oracle.com/java/21/archive
+
+# Set architecture-specific Java filename
+RUN case "$ARCH" in \
+      "amd64") JAVA_ARCH="x64";; \
+      "arm64") JAVA_ARCH="aarch64";; \
+      *) echo "Unsupported architecture: $ARCH" && exit 1;; \
+    esac && \
+    wget "$JAVA_BASE_URL/jdk-${JAVA_VERSION}_linux-${JAVA_ARCH}_bin.tar.gz" -O java.tar.gz && \
+    mkdir -p /opt/java && \
+    tar -xzf java.tar.gz -C /opt/java && \
+    rm java.tar.gz
+
+ENV JAVA_HOME=/opt/java/jdk-${JAVA_VERSION}
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Install python libs

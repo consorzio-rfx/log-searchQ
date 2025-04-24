@@ -1,3 +1,7 @@
+# networks:
+#   log_searchq_network:
+#     driver: bridge
+
 services:
   spark-master:
     build: .
@@ -11,8 +15,11 @@ services:
       - SPARK_SSL_ENABLED=no
       - SPARK_USER=spark
     ports:
-      - '8080:8080'
+      - '8084:8080'
       - '7077:7077'
+      - '4040:4040'
+    networks:
+      - log_searchq_network
 
   spark-worker:
     build: .
@@ -30,6 +37,10 @@ services:
       - SPARK_USER=spark
     depends_on:
       - spark-master
+    ports:
+      - '8085:8081'
+    networks:
+      - log_searchq_network
 
   postgresql-server:
     image: postgres
@@ -43,12 +54,5 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./logbookRFX.sql:/logbookRFX.sql
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=helloworld@domain.com
-      - PGADMIN_DEFAULT_PASSWORD=helloworld
-    ports:
-      - '2345:80'
-
+    networks:
+      - log_searchq_network
