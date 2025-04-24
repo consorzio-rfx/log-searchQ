@@ -15,7 +15,70 @@ services:
   #     - "8080:8080"
   #   depends_on:
   #     - db
-    
+  
+  keycloak:
+    # docker run -d --name keycloak-server -p 8082:8080 -v ./import/:/opt/keycloak/data/import/ 
+    #   -e KEYCLOAK_ADMIN=admin 
+    #   -e KEYCLOAK_ADMIN_PASSWORD=admin 
+    #   quay.io/keycloak/keycloak:latest start-dev --import-realm
+    image: quay.io/keycloak/keycloak:latest
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import/
+    command: start-dev --import-realm
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db
+      DB_DATABASE: rewsrv
+      DB_PORT: 5432
+      DB_USER: rewsrv
+      DB_PASSWORD: rewsrv
+    ports:
+      - "8082:8080"
+    depends_on:
+      - db
+    networks:
+      rewsrv_network_compose:
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    #restart: unless-stopped
+    ports:
+      - "8080:80"
+    networks:
+      rewsrv_network_compose:
+
+  logbook-backend:
+    container_name: backend
+    build: ./logbook-backend
+    #restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      rewsrv_network_compose:
+
+  # nginx:
+  #   image: nginx:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - frontend
+  #     - logbook-backend
+  #     - keycloak
+
+  #   networks:
+  #     rewsrv_network_compose:
+
+
   db:
     image: postgres
     restart: unless-stopped
