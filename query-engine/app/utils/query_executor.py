@@ -89,7 +89,7 @@ class QueryExecutor:
             QueryExecutor.execute(sparkContext=sparkContext, query=dependencyQuery, queryInput=queryInput, cache=cache)
 
         # Execute query
-        shotsRDD = sparkContext.parallelize(shotList, numSlices=2)
+        shotsRDD = sparkContext.parallelize(shotList)
         resultsRDD = shotsRDD.map(lambda shot: (shot, UnitFunctionExecutor.executePerShotWithCache(query, shot, cache)))
         results = resultsRDD.collectAsMap()
 

@@ -1,6 +1,8 @@
 from logbook_client import LogbookClient
 from query_client import QueryClient
 import pandas as pd
+import timeit
+import math
 
 if __name__ == "__main__":
     # logbookClient = LogbookClient()
@@ -28,6 +30,23 @@ def maxCurrent(shot: int) -> dict:
     # response = QueryClient.createQuery("http://localhost:5001/queries", "computeMaxCurrent", [], "", executionUnitFunction)
     # print(response)
 
-    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39390]) 
-    print(result)
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39390])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
+
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39390])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
+
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMinCurrent", [39390])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
+
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxAndMinCurrent", [39390])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
 
