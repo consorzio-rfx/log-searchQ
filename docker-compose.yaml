@@ -28,12 +28,8 @@ services:
     build: ./frontend-app
     image: consorziorfx/frontend-app:1.0
     restart: unless-stopped
-    environment:
-      - REACT_APP_KEYCLOAK_ENDPOINT=http://localhost:8082
-      - REACT_APP_LOGBOOK_BACKEND_ENDPOINT=http://localhost:8081
-      - REACT_APP_QUERY_ENGINE_ENDPOINT=http://localhost:5001
     ports:
-      - "3000:3000"
+      - "80:80"
     networks:
       - log_searchq_network
 
