@@ -17,19 +17,27 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_PROXY_HEADERS=xforwarded
+      - KC_PROXY=edge
+      - KC_HTTP_RELATIVE_PATH=/auth/
     ports:
       - "8082:8080"
-    depends_on:
-      - postgresql-server
     networks:
       - log_searchq_network
 
   frontend-app:
     build: ./frontend-app
     image: consorziorfx/frontend-app:1.0
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/selfsigned.crt:/etc/nginx/ssl/selfsigned.crt
+      - ./nginx/selfsigned.key:/etc/nginx/ssl/selfsigned.key
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - log_searchq_network
 
@@ -39,7 +47,7 @@ services:
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgres://helloworld:helloworld@postgresql-server:5432/logbookdb
-      - KEYCLOAK_URL=http://keycloak-server:8080
+      - KEYCLOAK_URL=http://keycloak-server:8080/auth
     ports:
       - "8081:8081"
     depends_on:
@@ -62,36 +70,6 @@ services:
       - spark-master
     networks:
       - log_searchq_network
-
-  # nginx:
-  #   image: nginx:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   depends_on:
-  #     - frontend
-  #     - logbook-backend
-  #     - keycloak
-  #   networks:
-  #     - log-searchq_network:
-
-  # postgresql-server:
-  #   image: postgres
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=helloworld
-  #     - POSTGRES_PASSWORD=helloworld
-  #     - POSTGRES_DB=logbookdb
-  #   ports:
-  #     - '5432:5432'
-  #   volumes:
-  #     - ./data:/var/lib/postgresql/data
-  #     - ./logbookRFX.sql:/logbookRFX.sql
-  #   networks:
-  #     - log_searchq_network
 
   pgadmin:
     image: dpage/pgadmin4

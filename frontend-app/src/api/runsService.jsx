@@ -1,7 +1,7 @@
 import axios from "axios";
 import API_ENDPOINTS from "./config";
 
-const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/logbook/runs';
+const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/runs';
 
 const getRuns = (page, pageSize, keycloak) => {
     return axios.get(API_URL, {

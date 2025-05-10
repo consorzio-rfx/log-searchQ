@@ -1,6 +1,5 @@
 from flask import Flask
 from .database.db import init_db
-from .routers.user_routes import user_blueprint
 from .routers.query_routes import query_blueprint
 from .routers.execution_unit_routes import execution_unit_blueprint
 from .routers.execute_query_routes import createExecuteQueryBlueprint
@@ -22,7 +21,6 @@ def create_app(sparkContext, config):
     )
 
     # Register blueprints
-    app.register_blueprint(user_blueprint)
     app.register_blueprint(query_blueprint)
     app.register_blueprint(execution_unit_blueprint)
     app.register_blueprint(createExecuteQueryBlueprint(sparkContext))

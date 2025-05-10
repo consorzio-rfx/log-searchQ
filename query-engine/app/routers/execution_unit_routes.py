@@ -4,12 +4,12 @@ from ..services.execution_unit_service import ExecutionUnitService
 
 execution_unit_blueprint = Blueprint('execution_unit', __name__)
 
-@execution_unit_blueprint.route('/executionUnits', methods=['GET'])
+@execution_unit_blueprint.route('/query-engine/executionUnits', methods=['GET'])
 def getAllExecutionUnits():
     executionUnits = ExecutionUnitService.getAllExecutionUnits()
     return jsonify([executionUnit.to_dict() for executionUnit in executionUnits])
 
-@execution_unit_blueprint.route('/executionUnits/<int:id>', methods=['DELETE'])
+@execution_unit_blueprint.route('/query-engine/executionUnits/<int:id>', methods=['DELETE'])
 def deleteExecutionUnit(id):
     executionUnit = ExecutionUnitService.deleteExecutionUnit(id)
     return jsonify(executionUnit.to_dict())

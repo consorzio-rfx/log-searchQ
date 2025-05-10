@@ -1,7 +1,7 @@
 import axios from "axios";
 import API_ENDPOINTS from "./config";
 
-const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/logbook/shots';
+const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/shots';
 
 const getShots = (Run, page, pageSize, keycloak) => {
     if (Run !== null && Run !== undefined) {

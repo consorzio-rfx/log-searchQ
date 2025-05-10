@@ -756,20 +756,22 @@
       "clientId": "frontend-client",
       "name": "",
       "description": "",
-      "rootUrl": "http://localhost",
+      "rootUrl": "https://localhost",
       "adminUrl": "",
-      "baseUrl": "http://localhost",
+      "baseUrl": "https://localhost",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:3000/*",
-        "http://localhost/*"
+        "https://localhost/*",
+        "https://192.168.60.210/*",
+        "http://localhost:3000/*"
       ],
       "webOrigins": [
-        "http://localhost",
-        "http://localhost:3000"
+        "https://localhost",
+        "http://localhost:3000",
+        "https://192.168.60.210/"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -785,7 +787,7 @@
         "realm_client": "false",
         "oidc.ciba.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:3000/*##http://localhost/*",
+        "post.logout.redirect.uris": "http://localhost:3000/*##https://localhost/*##https://192.168.60.210/*",
         "frontchannel.logout.session.required": "true",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",

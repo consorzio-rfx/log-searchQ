@@ -9,7 +9,7 @@ import pickle
 def createExecuteQueryBlueprint(sparkContext):
     execute_query_blueprint = Blueprint('execute_query', __name__)
 
-    @execute_query_blueprint.route('/api/executeQuery/selectQuery', methods=['GET'])
+    @execute_query_blueprint.route('/query-engine/executeQuery/selectQuery', methods=['GET'])
     def selectQuery():
         queryName = request.args.get('queryName', type=str)
         query = QueryService.getQueryByName(queryName)
@@ -25,12 +25,12 @@ def createExecuteQueryBlueprint(sparkContext):
         queryInput = QueryInputBuilder(shotList=shotList, run=run, pre_brief=pre_brief, post_brief=post_brief, pre_keywords=pre_keywords, post_keywords = post_keywords).build() 
         return queryInput
 
-    @execute_query_blueprint.route('/api/executeQuery/searchShots', methods=['GET'])
+    @execute_query_blueprint.route('/query-engine/executeQuery/searchShots', methods=['GET'])
     def searchShots():
         queryInput = getQueryInput(request)
         return jsonify([dict(row) for row in queryInput.getShotDetails()])
     
-    @execute_query_blueprint.route('/api/executeQuery/execute', methods=['POST'])
+    @execute_query_blueprint.route('/query-engine/executeQuery/execute', methods=['POST'])
     def execute():
         queryName = request.args.get('queryName', type=str)
         query = QueryService.getQueryByName(queryName)

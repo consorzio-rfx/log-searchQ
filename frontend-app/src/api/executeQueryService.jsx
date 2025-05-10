@@ -1,7 +1,7 @@
 import axios from "axios";
 import API_ENDPOINTS from "./config";
 
-const API_URL = API_ENDPOINTS.queryEngineEndpoint + '/api/executeQuery';
+const API_URL = API_ENDPOINTS.queryEngineEndpoint + '/executeQuery';
 
 const selectQuery = (queryName) => {
     return axios.get(API_URL + "/selectQuery", { params: { queryName: queryName } })
