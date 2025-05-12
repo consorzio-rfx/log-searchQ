@@ -10,6 +10,8 @@ if __name__ == "__main__":
     # print(data.info())
     # print(data)
 
+    SERVER = "http://localhost:5001"
+
     executionUnitFunction = r"""
 def maxCurrent(shot: int) -> dict:
     import MDSplus as mds
@@ -27,26 +29,25 @@ def maxCurrent(shot: int) -> dict:
 
     return result
 """
-    # response = QueryClient.createQuery("http://localhost:5001/queries", "computeMaxCurrent", [], "", executionUnitFunction)
-    # print(response)
+    response = QueryClient.createQuery(SERVER, "computeMaxCurrent", [], "", executionUnitFunction)
 
-    # start_ts = timeit.default_timer()
-    # result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
-    # elapsed_time = timeit.default_timer() - start_ts
-    # print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute(SERVER, "computeMaxCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time = {} ms".format(math.ceil(elapsed_time * 1000)))
 
-    # start_ts = timeit.default_timer()
-    # result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
-    # elapsed_time = timeit.default_timer() - start_ts
-    # print("Running time of computeMaxCurrent  = {} ms".format(math.ceil(elapsed_time * 1000)))
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute(SERVER, "computeMaxCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time of computeMaxCurrent  = {} ms".format(math.ceil(elapsed_time * 1000)))
 
-    # start_ts = timeit.default_timer()
-    # result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMinCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
-    # elapsed_time = timeit.default_timer() - start_ts
-    # print("Running time of computeMinCurrent = {} ms".format(math.ceil(elapsed_time * 1000)))
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute(SERVER, "computeMinCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time of computeMinCurrent = {} ms".format(math.ceil(elapsed_time * 1000)))
 
-    # start_ts = timeit.default_timer()
-    # result = QueryClient.execute("http://localhost:5001/api/executeQuery/execute", "computeMaxAndMinCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
-    # elapsed_time = timeit.default_timer() - start_ts
-    # print("Running time of computeMaxAndMinCurrent = {} ms".format(math.ceil(elapsed_time * 1000)))
+    start_ts = timeit.default_timer()
+    result = QueryClient.execute(SERVER, "computeMaxAndMinCurrent", [39384, 39385, 39386, 39387, 39388, 39389, 39390, 39391])
+    elapsed_time = timeit.default_timer() - start_ts
+    print("Running time of computeMaxAndMinCurrent = {} ms".format(math.ceil(elapsed_time * 1000)))
 

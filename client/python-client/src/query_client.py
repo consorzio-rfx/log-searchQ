@@ -3,18 +3,18 @@ import pickle
 
 class QueryClient:
     @staticmethod
-    def createQuery(url: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction: str):
+    def createQuery(server: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction: str):
         data = {
             "queryName": queryName,
             "dependencies": ", ".join(dependencies),
             "queryDescription": queryDescription,
             "executionUnitFunction": executionUnitFunction
         }
-        response = requests.post(url, json=data)
+        response = requests.post(server + "query-engine/queries", json=data)
         return response 
 
     @staticmethod
-    def execute(url: str, 
+    def execute(server: str, 
                 queryName: str, 
                 shotList: list = None, 
                 run: int = None, 
@@ -33,7 +33,7 @@ class QueryClient:
             "post_keywords": post_keywords
         }
 
-        response = requests.post(url, params=params)
+        response = requests.post(server + "/query-engine/executeQuery/execute", params=params)
         result = pickle.loads(response.content)
         return result
 
