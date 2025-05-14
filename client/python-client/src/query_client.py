@@ -1,17 +1,18 @@
 import requests
 import pickle
+import inspect
 
 class QueryClient:
     @staticmethod
-    def createQuery(server: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction: str):
+    def createQuery(server: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction):
         data = {
             "queryName": queryName,
             "dependencies": ", ".join(dependencies),
             "queryDescription": queryDescription,
-            "executionUnitFunction": executionUnitFunction
+            "executionUnitFunction": inspect.getsource(executionUnitFunction)
         }
-        response = requests.post(server + "query-engine/queries", json=data)
-        return response 
+        response = requests.post(server + "/query-engine/queries", json=data)
+        return response  
 
     @staticmethod
     def execute(server: str, 
