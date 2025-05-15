@@ -1,18 +1,30 @@
 import requests
 import pickle
 import inspect
+from functools import wraps
+
+def QueryDecorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    
+    setattr(wrapper, "_isExecutionUnitFunction", True)
+    return wrapper
 
 class QueryClient:
     @staticmethod
     def createQuery(server: str, queryName: str, dependencies: list, queryDescription: str, executionUnitFunction):
-        data = {
-            "queryName": queryName,
-            "dependencies": ", ".join(dependencies),
-            "queryDescription": queryDescription,
-            "executionUnitFunction": inspect.getsource(executionUnitFunction)
-        }
-        response = requests.post(server + "/query-engine/queries", json=data)
-        return response  
+        if getattr(executionUnitFunction, "_isExecutionUnitFunction", False):
+            data = {
+                "queryName": queryName,
+                "dependencies": ", ".join(dependencies),
+                "queryDescription": queryDescription,
+                "executionUnitFunction": inspect.getsource(executionUnitFunction)
+            }
+            response = requests.post(server + "/query-engine/queries", json=data)
+            return response  
+        else:
+            raise ValueError("executionUnitFunction must be decorated as QueryDecorator")
 
     @staticmethod
     def execute(server: str, 

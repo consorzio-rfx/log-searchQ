@@ -1,7 +1,8 @@
-from query_client import QueryClient
+from query_client import QueryDecorator, QueryClient
 import timeit
 import math
 
+@QueryDecorator
 def maxCurrent(shot: int) -> dict:
     import MDSplus as mds
     import numpy as np
