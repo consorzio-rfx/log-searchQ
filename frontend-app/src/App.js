@@ -12,6 +12,10 @@ import Query from "./pages/query/queries"
 import ExecutionUnits from "./pages/query/executionUnits";
 import ExecuteQuery from "./pages/query/executeQuery";
 
+import QuillTest from './pages/test/quillTest';
+import Operation from "./pages/input/operation";
+
+
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
@@ -27,11 +31,13 @@ function App() {
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
                 <Route path="/" element={<Home />}/>
+                <Route path="/operation" element={<Operation />} />
                 <Route path="/runs" element={<Runs />} />
                 <Route path="/shots" element={<Shots />} />
                 <Route path="/queries" element={<Query />} />
                 <Route path="/executeQuery" element={<ExecuteQuery />} />
                 <Route path="/executionUnits" element={<ExecutionUnits />} />
+                <Route path="/quillTest" element={<QuillTest />} />
               </Routes>
             </main>
           </div>

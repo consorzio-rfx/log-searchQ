@@ -44,6 +44,14 @@ func GetRuns(runs *[]Run, page int, pageSize int) (err error) {
 	return nil
 }
 
+// Get a single run by id
+func GetRun(run *Run, id int) (err error) {
+	if err = Config.DB.First(run, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // Get all runs
 func GetAllRuns(runs *[]Run) (err error) {
 	if err = Config.DB.Find(runs).Error; err != nil {

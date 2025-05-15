@@ -3,6 +3,8 @@ import API_ENDPOINTS from "./config";
 
 const API_URL = API_ENDPOINTS.logbookBackendEndpoint + '/runs';
 
+
+
 const getRuns = (page, pageSize, keycloak) => {
     return axios.get(API_URL, {
         params: {
@@ -13,6 +15,13 @@ const getRuns = (page, pageSize, keycloak) => {
         headers: { Authorization: `Bearer ${keycloak.token}` },
     });
 }
+
+const getRun = (run, keycloak) => {
+    return axios.get(API_URL + "/" + run, {
+        headers: { Authorization: `Bearer ${keycloak.token}` },
+    });
+}
+
 
 const getAllRuns = () => {
     return axios.get(API_URL);
@@ -33,6 +42,7 @@ const deleteRun = (run) => {
 
 const runsService = {
     getRuns,
+    getRun,
     getAllRuns,
     createRun,
     updateRun,

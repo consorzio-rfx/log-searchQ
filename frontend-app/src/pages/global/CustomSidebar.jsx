@@ -7,6 +7,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import DatasetOutlinedIcon from "@mui/icons-material/DatasetOutlined";
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import CodeIcon from '@mui/icons-material/Code';
 import CachedIcon from '@mui/icons-material/Cached';
 import FunctionsIcon from '@mui/icons-material/Functions';
@@ -66,6 +67,7 @@ const CustomSidebar = () => {
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item title="Home" to="/" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Operation" to="/operation" icon={<EditNoteIcon />} selected={selected} setSelected={setSelected} />
 
             <Typography variant="h6" sx={{ m: "15px 0 5px 20px" }}>Logbook</Typography>
             <Item title="Runs" to="/runs" icon={<StorageOutlinedIcon />} selected={selected} setSelected={setSelected} />

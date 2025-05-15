@@ -1,7 +1,7 @@
 version: '3'
 
-include:
-  - ./spark-cluster/docker-compose.yaml
+# include:
+#   - ./spark-cluster/docker-compose.yaml
 
 networks:
   log_searchq_network:
@@ -67,10 +67,24 @@ services:
       - "4042:4042"
     depends_on:
       - postgresql-server
-      - spark-master
+      # - spark-master
     networks:
       - log_searchq_network
 
+  postgresql-server:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=helloworld
+      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_DB=logbookdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./logbookRFX.sql:/logbookRFX.sql
+    networks:
+      - log_searchq_network
   pgadmin:
     image: dpage/pgadmin4
     environment:

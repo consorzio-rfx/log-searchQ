@@ -15,9 +15,10 @@ func SetupRouter() *gin.Engine {
 	r.Use(middleware.Cors())
 
 	// Authentication
-	r.Use(middleware.KeycloakAuthMiddleware())
+	// r.Use(middleware.KeycloakAuthMiddleware())
 
 	r.GET("/logbook/runs", Controllers.GetRuns)
+	r.GET("/logbook/runs/:id", Controllers.GetRun)
 	r.POST("/logbook/runs", Controllers.CreateRun)
 	r.PUT("/logbook/runs/:id", Controllers.UpdateRun)
 	r.DELETE("/logbook/runs/:id", Controllers.DeleteRun)

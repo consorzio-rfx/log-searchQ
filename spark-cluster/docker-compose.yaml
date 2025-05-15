@@ -42,17 +42,3 @@ services:
     networks:
       - log_searchq_network
 
-  postgresql-server:
-    image: postgres
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=helloworld
-      - POSTGRES_PASSWORD=helloworld
-      - POSTGRES_DB=logbookdb
-    ports:
-      - '5432:5432'
-    volumes:
-      - ./data:/var/lib/postgresql/data
-      - ./logbookRFX.sql:/logbookRFX.sql
-    networks:
-      - log_searchq_network

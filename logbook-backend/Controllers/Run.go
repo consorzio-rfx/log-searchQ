@@ -32,6 +32,19 @@ func GetRuns(c *gin.Context) {
 	}
 }
 
+// Get a single run by id
+func GetRun(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var run Models.Run
+	err := Models.GetRun(&run, id)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	} else {
+		c.JSON(http.StatusOK, run)
+	}
+}
+
 // Get all runs
 func GetAllRuns(c *gin.Context) {
 	var runs []Models.Run
