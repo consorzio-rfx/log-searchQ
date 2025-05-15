@@ -1,0 +1,58 @@
+# networks:
+#   log_searchq_network:
+#     driver: bridge
+
+services:
+  spark-master:
+    build: .
+    image: consorziorfx/logq-spark:1.0
+    platform: linux/amd64
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8084:8080'
+      - '7077:7077'
+      - '4040:4040'
+    networks:
+      - log_searchq_network
+
+  spark-worker:
+    build: .
+    image: consorziorfx/logq-spark:1.0
+    platform: linux/amd64
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=4
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    depends_on:
+      - spark-master
+    ports:
+      - '8085:8081'
+    networks:
+      - log_searchq_network
+
+  postgresql-server:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=helloworld
+      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_DB=logbookdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./logbookRFX.sql:/logbookRFX.sql
+    networks:
+      - log_searchq_network

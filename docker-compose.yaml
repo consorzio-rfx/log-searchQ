@@ -1,51 +1,82 @@
 version: '3'
 
+include:
+  - ./spark-cluster/docker-compose.yaml
+
 networks:
-  rewsrv_network_compose:
+  log_searchq_network:
     driver: bridge
 
 services:
-  # rewsrv:
-  #   container_name: rewsrv
-  #   build: .
-  #   restart: unless-stopped
-  #   networks:
-  #     rewsrv_network_compose:
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - db
-    
-  db:
-    image: postgres
+  keycloak-server:
+    image: quay.io/keycloak/keycloak:latest
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import/
+    command: start-dev --import-realm
     restart: unless-stopped
     environment:
-      POSTGRES_USER: rewsrv
-      POSTGRES_PASSWORD: rewsrv
-      POSTGRES_DB: rewsrv
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_PROXY_HEADERS=xforwarded
+      - KC_PROXY=edge
+      - KC_HTTP_RELATIVE_PATH=/auth/
     ports:
-      - "5432:5432"
+      - "8082:8080"
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
 
-  pgweb:
-    image: sosedoff/pgweb
+  frontend-app:
+    build: ./frontend-app
+    image: consorziorfx/frontend-app:1.0
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/selfsigned.crt:/etc/nginx/ssl/selfsigned.crt
+      - ./nginx/selfsigned.key:/etc/nginx/ssl/selfsigned.key
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - log_searchq_network
+
+  logbook-backend:
+    build: ./logbook-backend
+    image: consorziorfx/logbook-backend:1.0
     restart: unless-stopped
     environment:
-      DATABASE_URL: "postgresql://rewsrv:rewsrv@db:5432/rewsrv?sslmode=disable"
+      - DATABASE_URL=postgres://helloworld:helloworld@postgresql-server:5432/logbookdb
+      - KEYCLOAK_URL=http://keycloak-server:8080/auth
     ports:
       - "8081:8081"
     depends_on:
-      - db
+      - postgresql-server
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
 
-  adminer:
-    image: adminer
-    restart: always
+  query-engine:
+    build: ./query-engine
+    image: consorziorfx/query-engine:1.0
+    restart: unless-stopped
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - DATABASE_URL=postgresql://helloworld:helloworld@postgresql-server:5432/logbookdb
     ports:
-      - 8082:8080
+      - "5001:5001"
+      - "4042:4042"
     depends_on:
-      - db
+      - postgresql-server
+      - spark-master
     networks:
-      rewsrv_network_compose:
+      - log_searchq_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=helloworld@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=helloworld
+    ports:
+      - '2345:80'
+    networks:
+      - log_searchq_network
